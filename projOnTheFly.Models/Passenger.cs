@@ -10,21 +10,17 @@ namespace projOnTheFly.Models
 {
     public class Passenger
     {
-        #region Properties
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string CPF { get; set; }
         public string Name { get; set; }
         public char Gender { get; set; }
         public string Phone { get; set; }
-        public DateOnly DateBirth { get; set; }
+        public DateTime DateBirth { get; set; }
         public DateTime DtRegister { get; set; }
         public bool Status { get; set; }
         public Address Address { get; set; }
-        #endregion
-
-        #region Method
+     
         public bool IsUnderage()
         {
             bool underage = false;
@@ -35,7 +31,6 @@ namespace projOnTheFly.Models
             else underage = false;
 
             return underage;
-        }
-        #endregion
+        }  
     }
 }

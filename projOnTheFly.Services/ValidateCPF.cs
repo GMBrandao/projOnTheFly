@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 namespace projOnTheFly.Services
 {
     public class ValidateCPF
-    {
-        public bool cpfIsValid(string cpf, string cpfToValidate)
+    { 
+        private readonly string _cpf;
+        public ValidateCPF(string cpf)
         {
-            if (!isCpfInFormatCorrect(cpf))
+            _cpf = FormatCPF(cpf);
+        }
+        public bool IsValid()
+        {
+            if (!IsCpfInFormatCorrect(_cpf))
             {
-                cpfToValidate = cpfToValidate.Remove(9, 2);
+                var cpfToValidate = _cpf.Remove(9, 2);
                 int aux = 0;
 
                 for (int i = 0, j = 10; i <= 8; i++, j--)
@@ -36,19 +41,18 @@ namespace projOnTheFly.Services
 
                 string cpfComplete = cpfFirstDigit + secondDigit;
 
-                if (cpf == cpfComplete)
+                if (_cpf == cpfComplete)
                 {
                     return true;
                 }
             }
             return false;
         }
-        public string formatCPF(string cpfDotAndDash)
+        private string FormatCPF(string cpfDotAndDash)
         {
-            string cpf = cpfDotAndDash.Trim().Replace(".", "").Replace("-", "");
-            return cpf;
+            return cpfDotAndDash.Trim().Replace(".", "").Replace("-", "");
         }
-        public bool isCpfInFormatCorrect(string cpf)
+        public bool IsCpfInFormatCorrect(string cpf)
         {
             string aux = "11111111111";
 

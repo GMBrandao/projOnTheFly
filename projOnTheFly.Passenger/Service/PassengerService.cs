@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using projOnTheFly.Passenger.Controllers;
+using projOnTheFly.Passenger.Settings;
 
 namespace projOnTheFly.Passenger.Service
 {

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using projOnTheFly.Passenger.Controllers;
+using projOnTheFly.Passenger.Settings;
 using projOnTheFly.Passenger.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +15,8 @@ builder.Services.AddSwaggerGen();
 //Configuration Singleton and AppSettings parameters.
 
 builder.Services.Configure<ProjOnTheFlyPassengerSettings>(builder.Configuration.GetSection("ProjOnTheFlyPassengerSettings"));
-builder.Services.AddSingleton(s => s.GetRequiredService<IOptions<ProjOnTheFlyPassengerSettings>>().Value);
-builder.Services.AddSingleton<PassengerService>();
+builder.Services.AddScoped<IProjOnTheFlyPassengerSettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyPassengerSettings>>().Value);
+builder.Services.AddScoped<PassengerService>();
 
 
 

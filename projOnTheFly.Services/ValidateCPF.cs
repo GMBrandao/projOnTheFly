@@ -43,13 +43,11 @@ namespace projOnTheFly.Services
             }
             return false;
         }
-
         public string formatCPF(string cpfDotAndDash)
         {
             string cpf = cpfDotAndDash.Trim().Replace(".", "").Replace("-", "");
             return cpf;
         }
-
         public bool isCpfInFormatCorrect(string cpf)
         {
             string aux = "11111111111";

@@ -23,5 +23,17 @@ namespace projOnTheFly.Models
         public bool Status { get; set; }
         public Address Address { get; set; }
         #endregion
+
+        #region Method
+        public bool isUnderage()
+        {
+            bool underage = false;
+            int age = 0;
+            var passagerAge = DtRegister - DateBirth;
+            if (passagerAge < 18)
+                return underage = true;
+            else return underage = false;
+        }
+        #endregion
     }
 }

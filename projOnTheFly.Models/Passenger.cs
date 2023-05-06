@@ -25,14 +25,16 @@ namespace projOnTheFly.Models
         #endregion
 
         #region Method
-        public bool isUnderage()
+        public bool IsUnderage()
         {
             bool underage = false;
             int age = 0;
-            var passagerAge = DtRegister - DateBirth;
+            var passagerAge = DtRegister.Year - DateBirth.Year;
             if (passagerAge < 18)
-                return underage = true;
-            else return underage = false;
+                 underage = true;
+            else underage = false;
+
+            return underage;
         }
         #endregion
     }

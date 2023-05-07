@@ -29,7 +29,7 @@ namespace projOnTheFly.Company.Controllers
         public ActionResult<Models.Company> Get(string cnpj)
         {
             Models.Company company = null;
-            string cnpj2 = Regex.Replace(cnpj, "%2F", "/");
+            string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
             if(cnpj.Length == 14)
             {
@@ -37,7 +37,7 @@ namespace projOnTheFly.Company.Controllers
             }
             else
             {
-                company = _companyService.Get(cnpj2);
+                company = _companyService.Get(cnpjFixed);
                 return company;
             }
              company = _companyService.Get(formatedCnpj);

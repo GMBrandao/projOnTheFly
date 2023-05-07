@@ -25,20 +25,25 @@ namespace projOnTheFly.Company.Controllers
         public ActionResult<List<Models.Company>> Get() => _companyService.Get();
 
 
-        [HttpGet("{cnpj:length(18)}", Name = "GetCompanyByCnpj")]
+        [HttpGet("{cnpj}")]
         public ActionResult<Models.Company> Get(string cnpj)
         {
-            var validated = ValidatesCnpj.IsCnpj(cnpj);
-            if (!validated)
+            Models.Company company = null;
+            string cnpj2 = Regex.Replace(cnpj, "%2F", "/");
+            string formatedCnpj = "";
+            if(cnpj.Length == 14)
             {
-                return NotFound();
+                 formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");                
             }
+            else
+            {
+                company = _companyService.Get(cnpj2);
+                return company;
+            }
+             company = _companyService.Get(formatedCnpj);
+            return company;          
 
-            string FomatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
-
-            var company = _companyService.Get(FomatedCnpj);
-            if (company == null) return NotFound();
-            return company;
+           
         }
 
         [HttpPost]

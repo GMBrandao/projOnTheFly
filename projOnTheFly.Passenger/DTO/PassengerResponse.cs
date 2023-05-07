@@ -6,6 +6,12 @@ namespace projOnTheFly.Passenger.DTO
     {
         public string Name { get; set; }
         public DateTime DtRegister { get; set; }
-        public bool Status { get; set; }
+        public string Status { get; set; }
+
+        public string StatusPassenger(bool status)
+        {
+            if (status == true) return "Ativo";
+            else return "Inativo";
+        }
     }
 }

@@ -40,58 +40,79 @@ namespace projOnTheFly.Passenger.Controller
             
             if (passengerRequest == null) return UnprocessableEntity("Requisição de passageiro inválida");
 
+            AddressDTO? postOffice = await PostOfficeService.GetAddressAsync(passengerRequest.Address.ZipCode!);
+
+            if(postOffice == null)  return BadRequest("CEP inválido");
+
+            char charToUpper = char.ToUpper(passengerRequest.Gender);
+
+            if (charToUpper != 'M' || charToUpper != 'F') 
+                return BadRequest("Gênero inválido");
+
             Models.Passenger passenger = new()
             {
                 CPF = passengerRequest.CPF,
                 Name = passengerRequest.Name,
-                Gender = passengerRequest.Gender,
-                Phone = passengerRequest.Phone,
+                Gender = charToUpper,
                 DateBirth = passengerRequest.DateBirth,
-                DtRegister = passengerRequest.DtRegister,
+                DtRegister = DateTime.Now,
                 Status = passengerRequest.Status,
-                Address = passengerRequest.Address,
+                Address = new Address
+                {
+                    City = postOffice.City,
+                    ZipCode = postOffice.ZipCode,
+                    Complement = postOffice.Complement,
+                    NeighborHood = postOffice.NeighborHood,
+                    Number = passengerRequest.Address.Number,
+                    State = postOffice.State,
+                    Street = postOffice.Street,
+                    Country = postOffice.Country
+                },
             };
- 
+
+            passenger.Phone = passenger.RemovePhoneMask(passengerRequest.Phone);
+
             await _passengerService.Create(passenger);
 
             PassengerResponse passengerResponse = new()
             {
                 Name = passenger.Name,
                 DtRegister = passenger.DtRegister,
-                Status = passenger.Status,
             };
+
+            passengerResponse.Status = passengerResponse.StatusPassenger(passenger.Status);
 
             return CreatedAtAction("GetPassengerByCPF", new { cpf = passenger.CPF }, passengerResponse);
 
         }
 
-        [HttpPut("{cpf}")]
-        public async Task<ActionResult> Update(string cpf,PassengerRequest passengerRequest)
-        {
-            var validateCpf = new ValidateCPF(cpf);
+        //[HttpPut("{cpf}")]
+        //public async Task<ActionResult> Update(string cpf,PassengerRequest passengerRequest)
+        //{
+        //    var validateCpf = new ValidateCPF(cpf);
 
-            if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
+        //    if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-            Models.Passenger passenger = new()
-            {
-                CPF = cpf,
-                Name = passengerRequest.Name,
-                Gender = passengerRequest.Gender,
-                Phone = passengerRequest.Phone,
-                DateBirth = passengerRequest.DateBirth,
-                DtRegister = passengerRequest.DtRegister,
-                Status = passengerRequest.Status,
-                Address = passengerRequest.Address,
-            };
+        //    Models.Passenger passenger = new()
+        //    {
+        //        CPF = cpf,
+        //        Name = passengerRequest.Name,
+        //        Gender = passengerRequest.Gender,
+        //        Phone = passengerRequest.Phone,
+        //        DateBirth = passengerRequest.DateBirth,
+        //        DtRegister = passengerRequest.DtRegister,
+        //        Status = passengerRequest.Status,
+        //        Address = passengerRequest.Address,
+        //    };
 
-            var passengerUpdate = _passengerService.Get(passenger.CPF);
+        //    var passengerUpdate = _passengerService.Get(passenger.CPF);
 
-            if (passengerUpdate == null) return NotFound();
+        //    if (passengerUpdate == null) return NotFound();
             
-            await _passengerService.Update(passenger);
+        //    await _passengerService.Update(passenger);
             
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         [HttpDelete("{cpf}")]
         public async Task<ActionResult> Delete(string cpf)

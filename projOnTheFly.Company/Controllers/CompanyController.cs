@@ -54,14 +54,14 @@ namespace projOnTheFly.Company.Controllers
             var validated = ValidatesCnpj.IsCnpj(company.Cnpj);
             if (!validated)
             {
-                StatusCode(400);
+                return BadRequest("Cnpj inválido");
             }
 
             if (company == null) return NotFound();            
 
             var data = PostOfficeService.GetAddress(company.Address.ZipCode).Result;
-            Address ad = new Address();
-
+            if (data.CEP == null) return BadRequest("CEP inválido");
+            Address ad = new Address();            
             ad.Street = data.Logradouro;
             ad.City = data.City;
             ad.Number = company.Address.Number;
@@ -71,8 +71,7 @@ namespace projOnTheFly.Company.Controllers
             ad.State = data.State;
             company.Address = ad;
             string FomatedCnpj = Regex.Replace(company.Cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
-            company.Cnpj = FomatedCnpj;
-           
+            company.Cnpj = FomatedCnpj;         
 
             _companyService.Create(company);
             return StatusCode(201);
@@ -86,6 +85,7 @@ namespace projOnTheFly.Company.Controllers
             company.Id = a.Id;
             company.Cnpj = cnpj;
             var data = PostOfficeService.GetAddress(company.Address.ZipCode).Result;
+            if (data.CEP == null) return BadRequest("CEP inválido");
             Address ad = new Address();
             ad.Street = data.Logradouro;
             ad.City = data.City;
@@ -112,7 +112,7 @@ namespace projOnTheFly.Company.Controllers
             var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
             if (!validated)
             {
-                return StatusCode(400); 
+                return BadRequest("Cnpj inválido"); 
             }            
             var found = _companyService.Get(cnpjFixed);
             if (found == null) return NotFound();           

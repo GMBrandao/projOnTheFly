@@ -1,6 +1,6 @@
 ﻿namespace projOnTheFly.Company.Config
 {
-    public class ProjOnTheFly : IProjOnTheFlyCompanySettings
+    public class ProjOnTheFlyCompanySettings : IProjOnTheFlyCompanySettings
     {
         public string CompanyCollectionName { get ; set ; }
         public string AddressCollectionName { get; set; }

@@ -29,7 +29,7 @@ namespace projOnTheFly.Company.Controllers
         public ActionResult<Models.Company> Get(string cnpj)
         {
             Models.Company company = null;
-            string cnpj2 = Regex.Replace(cnpj, "%2F", "/");
+            string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
             if(cnpj.Length == 14)
             {
@@ -37,10 +37,12 @@ namespace projOnTheFly.Company.Controllers
             }
             else
             {
-                company = _companyService.Get(cnpj2);
+                company = _companyService.Get(cnpjFixed);
+                if (company == null) return NotFound();
                 return company;
             }
              company = _companyService.Get(formatedCnpj);
+            if (company == null) return NotFound();
             return company;          
 
            
@@ -52,7 +54,7 @@ namespace projOnTheFly.Company.Controllers
             var validated = ValidatesCnpj.IsCnpj(company.Cnpj);
             if (!validated)
             {
-                return NotFound();                
+                StatusCode(400);
             }
 
             if (company == null) return NotFound();            
@@ -76,11 +78,23 @@ namespace projOnTheFly.Company.Controllers
             return StatusCode(201);
         }
 
-        [HttpPut("{cnpj:length(18)}")]
+        [HttpPut("{cnpj}")]
         public ActionResult<Models.Company> Update(string cnpj, Models.Company company)
-        {
+        {   
             var a = _companyService.Get(cnpj);
             if (a == null) return NotFound();
+            company.Id = a.Id;
+            company.Cnpj = cnpj;
+            var data = PostOfficeService.GetAddress(company.Address.ZipCode).Result;
+            Address ad = new Address();
+            ad.Street = data.Logradouro;
+            ad.City = data.City;
+            ad.Number = company.Address.Number;
+            ad.NeighborHood = data.Bairro;
+            ad.Complement = data.Complemento;
+            ad.ZipCode = data.CEP;
+            ad.State = data.State;
+            company.Address = ad;
 
             _companyService.Update(cnpj, company);
 
@@ -89,16 +103,32 @@ namespace projOnTheFly.Company.Controllers
 
 
 
-        [HttpDelete("{cnpj:length(19)}")]
+        [HttpDelete("{cnpj}")]
         public ActionResult Delete(string cnpj)
         {
-            if (cnpj == null) return NotFound();
+            string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
+            string formatedCnpj = "";
 
-            var returned = _companyService.Get(cnpj);
-            if (returned == null) return NotFound();
-            _companyService.Delete(cnpj);
-
-            return Ok();
+            var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
+            if (!validated)
+            {
+                return StatusCode(400); 
+            }            
+            var found = _companyService.Get(cnpjFixed);
+            if (found == null) return NotFound();           
+            
+            if (cnpj.Length == 14)
+            {
+                formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
+                _companyService.Delete(formatedCnpj);
+                return StatusCode(200);
+            }
+            else
+            {
+                _companyService.Delete(cnpjFixed);
+                return StatusCode(200);
+            }
+            
         }
     }
 }

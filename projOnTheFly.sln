@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "projOnTheFly.Services", "pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "projOnTheFly.Passenger", "projOnTheFly.Passenger\projOnTheFly.Passenger.csproj", "{CD93B0C1-19DC-46AC-9804-7CE6A99160B7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirportAPI", "AirportAPI-main\AirportAPI\AirportAPI.csproj", "{EB9A29B4-BD33-498D-B82D-B9743E959D0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{CD93B0C1-19DC-46AC-9804-7CE6A99160B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD93B0C1-19DC-46AC-9804-7CE6A99160B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD93B0C1-19DC-46AC-9804-7CE6A99160B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB9A29B4-BD33-498D-B82D-B9743E959D0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB9A29B4-BD33-498D-B82D-B9743E959D0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB9A29B4-BD33-498D-B82D-B9743E959D0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB9A29B4-BD33-498D-B82D-B9743E959D0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

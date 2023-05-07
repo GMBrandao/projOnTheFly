@@ -11,7 +11,6 @@ namespace projOnTheFly.Models
     public class Passenger
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string CPF { get; set; }
         public string Name { get; set; }
         public char Gender { get; set; }

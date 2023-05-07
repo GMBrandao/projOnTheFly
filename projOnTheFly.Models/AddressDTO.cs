@@ -9,7 +9,6 @@ namespace projOnTheFly.Models
 {
     public  class AddressDTO
     {
-        #region Propriedades
         public int Id { get; set; }
         [JsonProperty("pais")]
         public string? Country { get; set; }
@@ -27,6 +26,5 @@ namespace projOnTheFly.Models
         public int Number { get; set; }
         [JsonProperty("complemento")]
         public string Complemento { get; set; }
-        #endregion
     }
 }

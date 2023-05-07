@@ -21,7 +21,7 @@ namespace projOnTheFly.Models
         public string name { get; set; }
         [JsonPropertyName("city_code")]
         public string city_code { get; set; }
-        [JsonPropertyName("country_ìd")]
+        [JsonPropertyName("country_id")]
         public string country_id { get; set; }
         [JsonPropertyName("location")]
         public string location { get; set; }

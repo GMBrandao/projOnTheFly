@@ -32,9 +32,6 @@ namespace AirportAPI.Serivces
 
         public List<Airport> GetByCityName(string city) =>
             _airports.Find<Airport>(airport => airport.city == city).ToList();
-
-        public List<Airport> GetByCountry(string country_id) =>
-            _airports.Find<Airport>(airport => airport.country_id == country_id).ToList();
             
     }
 }

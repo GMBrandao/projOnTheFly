@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
-namespace AirportAPI.Models
+namespace projOnTheFly.Models
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class Airport

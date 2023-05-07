@@ -1,6 +1,6 @@
-﻿using AirportAPI.Models;
-using AirportAPI.Serivces;
+﻿using AirportAPI.Serivces;
 using Microsoft.AspNetCore.Mvc;
+using projOnTheFly.Models;
 using System.Collections.Generic;
 
 namespace AirportAPI.Controllers

@@ -1,3 +1,7 @@
+using Microsoft.Extensions.Options;
+using projOnTheFly.Company.Config;
+using projOnTheFly.Company.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.Configure<ProjOnTheFlyCompanySettings>(builder.Configuration.GetSection("ProjOnTheFlyCompanySettings"));
+builder.Services.AddSingleton<IProjOnTheFlyCompanySettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyCompanySettings>>().Value);
+builder.Services.AddSingleton<CompanyService>();     
+
+
 
 var app = builder.Build();
 

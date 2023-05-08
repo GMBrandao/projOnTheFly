@@ -6,6 +6,10 @@ namespace projOnTheFly.Sales.Controllers
     [ApiController]
     public class SalesController : ControllerBase
     {
+
+
+
+
         public void Test()
         {
             var cpfs = new List<string> { "" };

@@ -6,7 +6,6 @@ namespace projOnTheFly.Passenger.DTO
     public class PassengerPutRequest
     {
         [Required]
-        [MaxLength(10)]
         [MinLength(3)]
         public string Name { get; set; }
 

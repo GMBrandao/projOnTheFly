@@ -8,5 +8,9 @@ namespace projOnTheFly.Models
 {
     public class Sale
     {
+        public List<Passenger>  Passenger { get; set; }
+        public Flight Flight { get; set; }
+        public bool Reserved { get; set; }
+        public bool Sold { get; set; }
     }
 }

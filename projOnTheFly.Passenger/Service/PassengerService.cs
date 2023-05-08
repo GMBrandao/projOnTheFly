@@ -12,9 +12,9 @@ namespace projOnTheFly.Passenger.Service
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Models.Passenger>(settings.PassengerCollectionName);
         }
-        public Task<List<Models.Passenger>> Get() => _collection.Find(c => true).ToListAsync();
+        public async Task<List<Models.Passenger>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
 
-        public Task<Models.Passenger> Get(string cpf) => _collection.Find(c => c.CPF == cpf).FirstOrDefaultAsync();
+        public Task<Models.Passenger> Get(string cpf) => _collection.Find(c => c.CPF == cpf && c.Status == true).FirstOrDefaultAsync();
 
         public async Task<Models.Passenger> Create(Models.Passenger passenger)
         {

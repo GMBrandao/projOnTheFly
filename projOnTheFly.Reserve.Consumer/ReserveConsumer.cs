@@ -1,13 +1,18 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace projOnTheFly.Sale.Consumers
+namespace projOnTheFly.Reserve.Consumer
 {
-    public class SaleConsumer
+    public class ReserveConsumer
     {
-        private const string QUEUE_NAME = "Sale";
+
+        private const string QUEUE_NAME = "Reserve";
 
         public void Start(IConnection connection)
         {
@@ -27,7 +32,7 @@ namespace projOnTheFly.Sale.Consumers
                     {
                         var body = ea.Body.ToArray();
                         var returnMessage = Encoding.UTF8.GetString(body);
-                        var sale = JsonConvert.DeserializeObject<Models.Sale>(returnMessage);
+                        var reserve = JsonConvert.DeserializeObject<Models.Sale>(returnMessage);
 
                         /* para chamar salvar direto no mongo 
                          * 

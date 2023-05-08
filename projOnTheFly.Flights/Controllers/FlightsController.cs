@@ -7,5 +7,7 @@ namespace projOnTheFly.Flights.Controllers
     [ApiController]
     public class FlightsController : ControllerBase
     {
+
+
     }
 }

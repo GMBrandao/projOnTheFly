@@ -4,8 +4,6 @@ namespace projOnTheFly.Models
 {
     public  class AddressDTO
     {
-        [JsonProperty("pais")]
-        public string Country { get; set; }
 
         [JsonProperty("cep")]
         public string ZipCode { get; set; }

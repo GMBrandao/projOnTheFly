@@ -3,13 +3,8 @@ using projOnTheFly.Models;
 
 namespace projOnTheFly.Passenger.DTO
 {
-    public class PassengerRequest
+    public class PassengerPutRequest
     {
-
-        [Required]
-        [StringLength(14)]
-        public string CPF { get; set; }
-
         [Required]
         [MaxLength(10)]
         [MinLength(3)]

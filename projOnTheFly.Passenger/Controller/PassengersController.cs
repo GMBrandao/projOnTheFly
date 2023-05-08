@@ -32,7 +32,7 @@ namespace projOnTheFly.Passenger.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<PassengerResponse>> Post(PassengerRequest passengerRequest)
+        public async Task<ActionResult<PassengerResponse>> Post(PassengerPostRequest passengerRequest)
         {
             var validateCpf = new ValidateCPF(passengerRequest.CPF);
 
@@ -46,7 +46,7 @@ namespace projOnTheFly.Passenger.Controller
 
             char charToUpper = char.ToUpper(passengerRequest.Gender);
 
-            if (charToUpper != 'M' || charToUpper != 'F') 
+            if (!"FM".Contains(charToUpper)) 
                 return BadRequest("Gênero inválido");
 
             Models.Passenger passenger = new()
@@ -65,8 +65,7 @@ namespace projOnTheFly.Passenger.Controller
                     NeighborHood = postOffice.NeighborHood,
                     Number = passengerRequest.Address.Number,
                     State = postOffice.State,
-                    Street = postOffice.Street,
-                    Country = postOffice.Country
+                    Street = postOffice.Street
                 },
             };
 
@@ -83,36 +82,55 @@ namespace projOnTheFly.Passenger.Controller
             passengerResponse.Status = passengerResponse.StatusPassenger(passenger.Status);
 
             return CreatedAtAction("GetPassengerByCPF", new { cpf = passenger.CPF }, passengerResponse);
-
         }
 
-        //[HttpPut("{cpf}")]
-        //public async Task<ActionResult> Update(string cpf,PassengerRequest passengerRequest)
-        //{
-        //    var validateCpf = new ValidateCPF(cpf);
+        [HttpPut("{cpf}")]
+        public async Task<ActionResult> Update(string cpf, PassengerPutRequest passengerRequest)
+        {
+            var validateCpf = new ValidateCPF(cpf);
 
-        //    if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
+            if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-        //    Models.Passenger passenger = new()
-        //    {
-        //        CPF = cpf,
-        //        Name = passengerRequest.Name,
-        //        Gender = passengerRequest.Gender,
-        //        Phone = passengerRequest.Phone,
-        //        DateBirth = passengerRequest.DateBirth,
-        //        DtRegister = passengerRequest.DtRegister,
-        //        Status = passengerRequest.Status,
-        //        Address = passengerRequest.Address,
-        //    };
+            if (passengerRequest == null) return UnprocessableEntity("Requisição de passageiro inválida");
 
-        //    var passengerUpdate = _passengerService.Get(passenger.CPF);
+            AddressDTO? postOffice = await PostOfficeService.GetAddressAsync(passengerRequest.Address.ZipCode!);
 
-        //    if (passengerUpdate == null) return NotFound();
-            
-        //    await _passengerService.Update(passenger);
-            
-        //    return NoContent();
-        //}
+            if (postOffice == null) return BadRequest("CEP inválido");
+
+            char charToUpper = char.ToUpper(passengerRequest.Gender);
+
+            if (!"FM".Contains(charToUpper))
+                return BadRequest("Gênero inválido");
+
+            Models.Passenger passenger = new()
+            {
+                CPF = cpf,
+                Name = passengerRequest.Name,
+                Gender = charToUpper,
+                Phone = passengerRequest.Phone,
+                DateBirth = passengerRequest.DateBirth,
+                DtRegister = DateTime.Now,
+                Status = passengerRequest.Status,
+                Address = new Address
+                {
+                    City = postOffice.City,
+                    ZipCode = postOffice.ZipCode,
+                    Complement = postOffice.Complement,
+                    NeighborHood = postOffice.NeighborHood,
+                    Number = passengerRequest.Address.Number,
+                    State = postOffice.State,
+                    Street = postOffice.Street
+                },
+            };
+
+            var passengerUpdate = _passengerService.Get(passenger.CPF);
+
+            if (passengerUpdate == null) return NotFound();
+
+            await _passengerService.Update(passenger);
+
+            return NoContent();
+        }
 
         [HttpDelete("{cpf}")]
         public async Task<ActionResult> Delete(string cpf)
@@ -129,7 +147,5 @@ namespace projOnTheFly.Passenger.Controller
             
             return NoContent();
         }
-
-
     }
 }

@@ -7,6 +7,8 @@ namespace projOnTheFly.Company.Services
     public class CompanyService
     {
         private readonly IMongoCollection<Models.Company> _company;
+
+        public CompanyService() { }
         public CompanyService(IProjOnTheFlyCompanySettings settings)
         {
             var company = new MongoClient(settings.ConnectionString);
@@ -15,18 +17,19 @@ namespace projOnTheFly.Company.Services
 
         }
 
-        public List<Models.Company> Get() => _company.Find(a => true).ToList();
-        public Models.Company Get(string cnpj) => _company.Find(c => c.Cnpj == cnpj).FirstOrDefault();
-        public Models.Company Create(Models.Company company)
+        public async Task<List<Models.Company>> Get() => await _company.Find(a => true && a.Status == true).ToListAsync();
+        public async Task<Models.Company> Get(string cnpj) => await _company.Find(c => c.Cnpj == cnpj && c.Status == true).FirstOrDefaultAsync();
+        public Models.Company GetCompany(string cnpj) => _company.Find(c => c.Cnpj == cnpj && c.Status == true).FirstOrDefault();
+        public async Task<Models.Company> Create(Models.Company company)
         {
-            _company.InsertOne(company);
+            await _company.InsertOneAsync(company);
             return company;
         }
 
-        public void Update(string cnpj, Models.Company company) => _company.ReplaceOne(a => a.Cnpj == cnpj, company);
+        public async void Update(string cnpj, Models.Company company) => await _company.ReplaceOneAsync(a => a.Cnpj == cnpj, company);
 
-        public void Delete(string cnpj) => _company.DeleteOne(a => a.Cnpj == cnpj);
+        public async void Delete(string cnpj) => await _company.DeleteOneAsync(a => a.Cnpj == cnpj);
 
-        public void Delete(Models.Company company) => _company.DeleteOne(a => a.Cnpj == company.Cnpj);
+       
     }
 }

@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Options;
-using projOnTheFly.Aircrafts.Config;
-using projOnTheFly.Aircrafts.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,10 +6,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.Configure<projOnTheFlyAircraftSettings>(builder.Configuration.GetSection("projOnTheFlySettings"));
-builder.Services.AddScoped<IprojOnTheFlyAircraftSettings>(s => s.GetRequiredService<IOptions<projOnTheFlyAircraftSettings>>().Value);
-builder.Services.AddScoped<AircraftsService>();
 
 var app = builder.Build();
 

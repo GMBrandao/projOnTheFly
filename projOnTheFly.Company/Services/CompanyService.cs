@@ -8,7 +8,6 @@ namespace projOnTheFly.Company.Services
     {
         private readonly IMongoCollection<Models.Company> _company;
 
-        public CompanyService() { }
         public CompanyService(IProjOnTheFlyCompanySettings settings)
         {
             var company = new MongoClient(settings.ConnectionString);

@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<ProjOnTheFlyCompanySettings>(builder.Configuration.GetSection("ProjOnTheFlyCompanySettings"));
 builder.Services.AddSingleton<IProjOnTheFlyCompanySettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyCompanySettings>>().Value);
-builder.Services.AddSingleton<CompanyService>();     
+builder.Services.AddSingleton<CompanyService>();
 
 
 

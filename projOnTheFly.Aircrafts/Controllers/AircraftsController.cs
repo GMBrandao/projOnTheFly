@@ -13,12 +13,10 @@ namespace projOnTheFly.Aircrafts.Controllers
     public class AircraftsController : ControllerBase
     {
         private readonly AircraftsService _aircraftsService;
-        private readonly CompanyService _companyService;
 
-        public  AircraftsController(AircraftsService aircraftsService, CompanyService companyService)
+        public  AircraftsController(AircraftsService aircraftsService)
         {
             _aircraftsService = aircraftsService;
-            _companyService = companyService;
         }
 
         [HttpGet]
@@ -38,7 +36,7 @@ namespace projOnTheFly.Aircrafts.Controllers
             var validRAB = new ValidateRAB(aircraftPost.Rab);
             if (!validRAB.IsValid()) return BadRequest("RAB inválido");
             if (aircraftPost == null) return UnprocessableEntity("Requisição de aeronave inválida");
-            Models.Company company = _companyService.GetCompany(aircraftPost.Company.Cnpj);
+            Models.Company company = await GetCompany.GetCompanyAsync(aircraftPost.Company_Cnpj);
 
             Aircraft aircraft = new()
             {

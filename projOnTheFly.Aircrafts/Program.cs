@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Options;
 using projOnTheFly.Aircrafts.Config;
 using projOnTheFly.Aircrafts.Services;
+using projOnTheFly.Company.Config;
+using projOnTheFly.Company.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<projOnTheFlyAircraftSettings>(builder.Configuration.GetSection("projOnTheFlySettings"));
+builder.Services.Configure<projOnTheFlyAircraftSettings>(builder.Configuration.GetSection("projOnTheFlyAircraftSettings"));
 builder.Services.AddScoped<IprojOnTheFlyAircraftSettings>(s => s.GetRequiredService<IOptions<projOnTheFlyAircraftSettings>>().Value);
 builder.Services.AddScoped<AircraftsService>();
 

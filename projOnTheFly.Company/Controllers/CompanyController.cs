@@ -5,6 +5,8 @@ using projOnTheFly.Models;
 using projOnTheFly.Company.Services;
 using System.Net;
 using System.Text.RegularExpressions;
+using projOnTheFly.Company.DTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace projOnTheFly.Company.Controllers
 {
@@ -22,89 +24,136 @@ namespace projOnTheFly.Company.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Models.Company>> Get() => _companyService.Get();
+        public  async Task<List<Models.Company>> Get() => await _companyService.Get();
 
 
         [HttpGet("{cnpj}")]
-        public ActionResult<Models.Company> Get(string cnpj)
+        public async Task<ActionResult<Models.Company>> Get(string cnpj)
         {
             Models.Company company = null;
             string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
-            if(cnpj.Length == 14)
+            if (cnpj.Length == 14)
             {
-                 formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");                
+                formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
             }
             else
             {
-                company = _companyService.Get(cnpjFixed);
+                company = await _companyService.Get(cnpjFixed);
                 if (company == null) return NotFound();
-                return company;
+                return  company;
             }
-             company = _companyService.Get(formatedCnpj);
+            company = await _companyService.Get(formatedCnpj);
             if (company == null) return NotFound();
-            return company;          
+            return  company;
 
-           
+
         }
 
         [HttpPost]
-        public ActionResult<Models.Company> Create(Models.Company company)
+        public async Task<ActionResult<CompanyPostRequest>> Create(CompanyPostRequest companyRequest)
         {
-            var validated = ValidatesCnpj.IsCnpj(company.Cnpj);
+            var validated = ValidatesCnpj.IsCnpj(companyRequest.Cnpj);
             if (!validated)
             {
                 return BadRequest("Cnpj inválido");
             }
 
-            if (company == null) return NotFound();            
+            if (companyRequest == null) return NotFound();
 
-            var data = PostOfficeService.GetAddressAsync(company.Address.ZipCode).Result;
+            var data = PostOfficeService.GetAddressAsync(companyRequest.Address.ZipCode).Result;
+
             if (data.ZipCode == null) return BadRequest("CEP inválido");
-            Address ad = new Address();            
-            ad.Street = data.Street;
-            ad.City = data.City;
-            ad.Number = company.Address.Number;
-            ad.NeighborHood = data.NeighborHood;
-            ad.Complement = data.Complement;
-            ad.ZipCode = data.ZipCode;
-            ad.State = data.State;
-            company.Address = ad;
-            string FomatedCnpj = Regex.Replace(company.Cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
-            company.Cnpj = FomatedCnpj;         
 
-            _companyService.Create(company);
+            string FomatedCnpj = Regex.Replace(companyRequest.Cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
+
+            Models.Company company = new()
+            {
+                Cnpj = FomatedCnpj,
+                Name = companyRequest.Name,
+                NameOpt = companyRequest.NameOpt,
+                DtOpen = DateTime.Now,
+                Status = companyRequest.Status,
+                Address = new Address()
+                {
+                    Street = data.Street,
+                    City = data.City,
+                    Number = companyRequest.Address.Number,
+                    NeighborHood = data.NeighborHood,
+                    Complement = data.Complement,
+                    ZipCode = data.ZipCode,
+                    State = data.State,
+
+                }
+
+            };
+            await  _companyService.Create(company);
             return StatusCode(201);
         }
 
+
         [HttpPut("{cnpj}")]
-        public ActionResult<Models.Company> Update(string cnpj, Models.Company company)
-        {   
-            var a = _companyService.Get(cnpj);
-            if (a == null) return NotFound();
-            company.Id = a.Id;
-            company.Cnpj = cnpj;
-            var data = PostOfficeService.GetAddressAsync(company.Address.ZipCode).Result;
+        public async Task<ActionResult<CompanyPutRequest>> Update(string cnpj, CompanyPutRequest companyPutRequest)
+        {
+            string cnpjFixed = "";  
+                        
+                                   
+            if (cnpj.Length == 14)
+            {
+                cnpjFixed = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
+                var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
+                if (!validated)
+                {
+                    return BadRequest("Cnpj inválido");
+                }
+                var found = await  _companyService.Get(cnpjFixed); 
+                if (found == null) return BadRequest("status: false");
+            }
+            else
+            {
+                cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
+                var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
+                if (!validated)
+                {
+                    return BadRequest("Cnpj inválido");
+                }
+                var found = _companyService.Get(cnpjFixed);
+                if (found == null) return NotFound();
+                
+            }
+
+            var data =  PostOfficeService.GetAddressAsync(companyPutRequest.Address.ZipCode).Result;
+
             if (data.ZipCode == null) return BadRequest("CEP inválido");
-            Address ad = new Address();
-            ad.Street = data.Street;
-            ad.City = data.City;
-            ad.Number = company.Address.Number;
-            ad.NeighborHood = data.NeighborHood;
-            ad.Complement = data.Complement;
-            ad.ZipCode = data.ZipCode;
-            ad.State = data.State;
-            company.Address = ad;
 
-            _companyService.Update(cnpj, company);
+            Models.Company company = new()
+            {
+                
+                Name = companyPutRequest.Name,
+                NameOpt = companyPutRequest.NameOpt,               
+                Status = companyPutRequest.Status,
+                Cnpj = cnpjFixed,
+                Address = new Address()
+                {
+                    Street = data.Street,
+                    City = data.City,
+                    Number = companyPutRequest.Address.Number,
+                    NeighborHood = data.NeighborHood,
+                    Complement = data.Complement,
+                    ZipCode = data.ZipCode,
+                    State = data.State,
+                }
+            };           
 
-            return StatusCode(200); 
+            _companyService.Update(cnpjFixed, company);
+
+            return StatusCode(200);
         }
 
 
 
         [HttpDelete("{cnpj}")]
-        public ActionResult Delete(string cnpj)
+        public async Task<ActionResult> Delete(string cnpj)
         {
             string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
@@ -112,11 +161,11 @@ namespace projOnTheFly.Company.Controllers
             var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
             if (!validated)
             {
-                return BadRequest("Cnpj inválido"); 
-            }            
+                return BadRequest("Cnpj inválido");
+            }
             var found = _companyService.Get(cnpjFixed);
-            if (found == null) return NotFound();           
-            
+            if (found == null) return NotFound();
+
             if (cnpj.Length == 14)
             {
                 formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
@@ -128,7 +177,7 @@ namespace projOnTheFly.Company.Controllers
                 _companyService.Delete(cnpjFixed);
                 return StatusCode(200);
             }
-            
+
         }
     }
 }

@@ -11,10 +11,7 @@ namespace projOnTheFly.Models
 {
     public class Company
     {
-
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
         public string Cnpj { get; set; }
         public string Name { get; set; }
         public string NameOpt { get; set; }

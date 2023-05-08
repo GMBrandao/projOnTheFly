@@ -41,10 +41,12 @@ namespace projOnTheFly.Company.Controllers
             {
                 company = await _companyService.Get(cnpjFixed);
                 if (company == null) return NotFound();
+                if (company.Status == false) return BadRequest("STATUS INATIVO");
                 return  company;
             }
             company = await _companyService.Get(formatedCnpj);
             if (company == null) return NotFound();
+            if (company.Status == false) return BadRequest("STATUS INATIVO");
             return  company;
 
 
@@ -95,32 +97,27 @@ namespace projOnTheFly.Company.Controllers
         [HttpPut("{cnpj}")]
         public async Task<ActionResult<CompanyPutRequest>> Update(string cnpj, CompanyPutRequest companyPutRequest)
         {
-            string cnpjFixed = "";  
-                        
+            string cnpjFixed = "";
+            
                                    
             if (cnpj.Length == 14)
             {
-                cnpjFixed = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
-                var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
-                if (!validated)
-                {
-                    return BadRequest("Cnpj inválido");
-                }
-                var found = await  _companyService.Get(cnpjFixed); 
-                if (found == null) return BadRequest("status: false");
+                cnpjFixed = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");               
             }
             else
             {
-                cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
-                var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
-                if (!validated)
-                {
-                    return BadRequest("Cnpj inválido");
-                }
-                var found = _companyService.Get(cnpjFixed);
-                if (found == null) return NotFound();
-                
+                cnpjFixed = Regex.Replace(cnpj, "%2F", "/");              
             }
+
+            var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
+            if (!validated)
+            {
+                return BadRequest("Cnpj inválido");
+            }
+
+            var found = await _companyService.Get(cnpjFixed);
+            if (found.Status == false) return BadRequest("STATUS INATIVO");
+            if (found == null) return BadRequest(NotFound());
 
             var data =  PostOfficeService.GetAddressAsync(companyPutRequest.Address.ZipCode).Result;
 

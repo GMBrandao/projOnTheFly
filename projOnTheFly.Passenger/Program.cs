@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-//Configuration Singleton and AppSettings parameters.
+//Configuration Scoped and AppSettings parameters.
 
 builder.Services.Configure<ProjOnTheFlyPassengerSettings>(builder.Configuration.GetSection("ProjOnTheFlyPassengerSettings"));
 builder.Services.AddScoped<IProjOnTheFlyPassengerSettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyPassengerSettings>>().Value);

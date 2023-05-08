@@ -30,9 +30,6 @@ namespace projOnTheFly.Passenger.Controller
             return containsPassenger;
             
         }
-
-
-
         [HttpGet("{cpf}", Name = "Get CPF")]
         public async Task<ActionResult<Models.Passenger>> GetPassengerByCPF(string cpf)
         {
@@ -132,7 +129,6 @@ namespace projOnTheFly.Passenger.Controller
                 Gender = charToUpper,
                 Phone = passengerRequest.Phone,
                 DateBirth = passengerRequest.DateBirth,
-                DtRegister = DateTime.Now,
                 Status = passengerRequest.Status,
                 Address = new Address
                 {
@@ -143,7 +139,7 @@ namespace projOnTheFly.Passenger.Controller
                     Number = passengerRequest.Address.Number,
                     State = postOffice.State,
                     Street = postOffice.Street
-                },
+                }
             };
 
             var passengerUpdate = _passengerService.Get(passenger.CPF);
@@ -163,7 +159,6 @@ namespace projOnTheFly.Passenger.Controller
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
             
             var findCpf = _passengerService.Get();
-
 
             if (findCpf == null) return NotFound();
 

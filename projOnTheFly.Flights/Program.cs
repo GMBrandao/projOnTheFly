@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
-using projOnTheFly.Passenger.Settings;
-using projOnTheFly.Passenger.Service;
+using projOnTheFly.Flights.Config;
+using projOnTheFly.Flights.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +11,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 //Configuration Scoped and AppSettings parameters.
 
-builder.Services.Configure<ProjOnTheFlyPassengerSettings>(builder.Configuration.GetSection("ProjOnTheFlyPassengerSettings"));
-builder.Services.AddScoped<IProjOnTheFlyPassengerSettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyPassengerSettings>>().Value);
-builder.Services.AddScoped<PassengerService>();
+
+builder.Services.Configure<ProjOnTheFlyFlightSettings>(builder.Configuration.GetSection("ProjOnTheFlyPassengerSettings"));
+builder.Services.AddScoped<IProjOnTheFlyFlightSettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyFlightSettings>>().Value);
+builder.Services.AddScoped<FlightService>();
+
 
 
 

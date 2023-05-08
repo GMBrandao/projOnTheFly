@@ -19,16 +19,32 @@ namespace projOnTheFly.Passenger.Controller
         }
 
         [HttpGet]
-        public Task<List<Models.Passenger>> GetAll() =>_passengerService.Get();
+        public async Task<ActionResult<List<Models.Passenger>>> GetAll()
+        {
+            var containsPassenger = await  _passengerService.Get();
 
-        [HttpGet("{cpf}")]
+            if (containsPassenger.Count()==0)
+            {
+                return BadRequest("Não existem passageiros com status ativos");
+            }
+            return containsPassenger;
+            
+        }
+        [HttpGet("{cpf}", Name = "Get CPF")]
         public async Task<ActionResult<Models.Passenger>> GetPassengerByCPF(string cpf)
         {
             var validateCpf = new ValidateCPF(cpf);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-            return  await _passengerService.Get(cpf);
+             var containsPassenger =  await _passengerService.Get(cpf);
+
+            if(containsPassenger is null)
+            {
+                return BadRequest("Cpf com status inativo");
+            }
+            return containsPassenger;
+
         }
 
         [HttpPost]
@@ -61,7 +77,7 @@ namespace projOnTheFly.Passenger.Controller
                 {
                     City = postOffice.City,
                     ZipCode = postOffice.ZipCode,
-                    Complement = postOffice.Complement,
+                    Complement = passengerRequest.Address.Complement,
                     NeighborHood = postOffice.NeighborHood,
                     Number = passengerRequest.Address.Number,
                     State = postOffice.State,
@@ -91,6 +107,10 @@ namespace projOnTheFly.Passenger.Controller
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
+            var findCpf = _passengerService.Get();
+
+            if (findCpf == null) return NotFound();
+
             if (passengerRequest == null) return UnprocessableEntity("Requisição de passageiro inválida");
 
             AddressDTO? postOffice = await PostOfficeService.GetAddressAsync(passengerRequest.Address.ZipCode!);
@@ -109,18 +129,17 @@ namespace projOnTheFly.Passenger.Controller
                 Gender = charToUpper,
                 Phone = passengerRequest.Phone,
                 DateBirth = passengerRequest.DateBirth,
-                DtRegister = DateTime.Now,
                 Status = passengerRequest.Status,
                 Address = new Address
                 {
                     City = postOffice.City,
                     ZipCode = postOffice.ZipCode,
-                    Complement = postOffice.Complement,
+                    Complement = passengerRequest.Address.Complement,
                     NeighborHood = postOffice.NeighborHood,
                     Number = passengerRequest.Address.Number,
                     State = postOffice.State,
                     Street = postOffice.Street
-                },
+                }
             };
 
             var passengerUpdate = _passengerService.Get(passenger.CPF);
@@ -138,6 +157,10 @@ namespace projOnTheFly.Passenger.Controller
             var validateCpf = new ValidateCPF(cpf);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
+            
+            var findCpf = _passengerService.Get();
+
+            if (findCpf == null) return NotFound();
 
             var passengerDelete = _passengerService.Get(cpf);
             

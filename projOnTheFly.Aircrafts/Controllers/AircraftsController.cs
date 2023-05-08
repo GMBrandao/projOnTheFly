@@ -38,7 +38,7 @@ namespace projOnTheFly.Aircrafts.Controllers
             var validRAB = new ValidateRAB(aircraftPost.Rab);
             if (!validRAB.IsValid()) return BadRequest("RAB inválido");
             if (aircraftPost == null) return UnprocessableEntity("Requisição de aeronave inválida");
-            Models.Company company = _companyService.Get(aircraftPost.Company.Cnpj);
+            Models.Company company = _companyService.GetCompany(aircraftPost.Company.Cnpj);
 
             Aircraft aircraft = new()
             {

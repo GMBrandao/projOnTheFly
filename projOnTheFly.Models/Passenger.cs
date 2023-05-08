@@ -7,6 +7,7 @@ namespace projOnTheFly.Models
         [BsonId]
         public string CPF { get; set; }
         public string Name { get; set; }
+        []
         public char Gender { get; set; }
         public string Phone { get; set; }
         public DateTime DateBirth { get; set; }

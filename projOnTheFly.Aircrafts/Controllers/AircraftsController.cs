@@ -40,7 +40,7 @@ namespace projOnTheFly.Aircrafts.Controllers
             if (company == null) return BadRequest("CNPJ da empresa inválido");
             Aircraft aircraft = new()
             {
-                Rab = aircraftPost.Rab,
+                Rab = aircraftPost.Rab.ToUpper(),
                 Capacity = aircraftPost.Capacity,
                 DtRegistry = DateTime.Now,
                 DtLastFlight =  null,

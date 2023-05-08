@@ -59,15 +59,15 @@ namespace projOnTheFly.Company.Controllers
 
             if (company == null) return NotFound();            
 
-            var data = PostOfficeService.GetAddress(company.Address.ZipCode).Result;
-            if (data.CEP == null) return BadRequest("CEP inválido");
+            var data = PostOfficeService.GetAddressAsync(company.Address.ZipCode).Result;
+            if (data.ZipCode == null) return BadRequest("CEP inválido");
             Address ad = new Address();            
-            ad.Street = data.Logradouro;
+            ad.Street = data.Street;
             ad.City = data.City;
             ad.Number = company.Address.Number;
-            ad.NeighborHood = data.Bairro;
-            ad.Complement = data.Complemento;
-            ad.ZipCode = data.CEP;
+            ad.NeighborHood = data.NeighborHood;
+            ad.Complement = data.Complement;
+            ad.ZipCode = data.ZipCode;
             ad.State = data.State;
             company.Address = ad;
             string FomatedCnpj = Regex.Replace(company.Cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
@@ -84,15 +84,15 @@ namespace projOnTheFly.Company.Controllers
             if (a == null) return NotFound();
             company.Id = a.Id;
             company.Cnpj = cnpj;
-            var data = PostOfficeService.GetAddress(company.Address.ZipCode).Result;
-            if (data.CEP == null) return BadRequest("CEP inválido");
+            var data = PostOfficeService.GetAddressAsync(company.Address.ZipCode).Result;
+            if (data.ZipCode == null) return BadRequest("CEP inválido");
             Address ad = new Address();
-            ad.Street = data.Logradouro;
+            ad.Street = data.Street;
             ad.City = data.City;
             ad.Number = company.Address.Number;
-            ad.NeighborHood = data.Bairro;
-            ad.Complement = data.Complemento;
-            ad.ZipCode = data.CEP;
+            ad.NeighborHood = data.NeighborHood;
+            ad.Complement = data.Complement;
+            ad.ZipCode = data.ZipCode;
             ad.State = data.State;
             company.Address = ad;
 

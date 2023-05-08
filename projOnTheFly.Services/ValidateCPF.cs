@@ -15,6 +15,8 @@ namespace projOnTheFly.Services
         }
         public bool IsValid()
         {
+            if(string.IsNullOrEmpty(_cpf)) return false;
+
             if (!IsCpfInFormatCorrect(_cpf))
             {
                 var cpfToValidate = _cpf.Remove(9, 2);

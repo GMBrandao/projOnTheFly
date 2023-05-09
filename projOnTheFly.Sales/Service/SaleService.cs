@@ -33,12 +33,12 @@ namespace projOnTheFly.Sales.Service
        
         public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.Passengers.Contains(cpf));
 
-        public async Task<ActionResult<Sale>> GetByFlight(string iata, string rab, string schedule)
+        public async Task<Sale> GetByFlight(string iata, string rab, string schedule)
         {
             return await _collection.Find(c => c.Id == $"{iata}|{rab}|{schedule}").FirstOrDefaultAsync();
         }
 
-        public async Task<ActionResult<Sale>> GetById(string id)
+        public async Task<Sale> GetById(string id)
         {
             return await _collection.Find(c => c.Id == id).FirstOrDefaultAsync();
         }

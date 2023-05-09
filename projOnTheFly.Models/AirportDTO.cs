@@ -9,7 +9,7 @@ namespace projOnTheFly.Models
     public class AirportDTO
     {
         
-        public string Iata;
+        public string iata;
 
         public string City;
 

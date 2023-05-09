@@ -47,27 +47,22 @@ namespace projOnTheFly.Flights.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<Flight>> Update(string iata, string rab, DateTime schedule, Flight flight)
+        public async Task<ActionResult<Flight>> Update(Flight flight)
         {
-            _flightService.Update(iata, rab, schedule, flight);
+            _flightService.Update( flight);
 
             return StatusCode(200);
         }
 
         [HttpDelete]
-        public async Task<ActionResult> Delete(string iata, string rab, DateTime schedule, Flight flight)
+        public async Task<ActionResult> Delete(string iata, string rab, DateTime schedule)
         {
 
-            _flightService.Update(iata, rab, schedule, flight);
+            _flightService.Delete(iata, rab, schedule);
             return StatusCode(200);
 
         }
-        public FlightsController(FlightService flightService)
-        {
-            _flightService = flightService;
-        }
-
-        // api/Flights/{iata}/{rab}/{schedule}
+      
         [HttpGet("{iata}/{rab}/{schedule}")]
         public async Task<Flight> GetByFilters(string iata, string rab, DateTime schedule) 
             => await _flightService.GetByFilters(iata, rab,schedule);

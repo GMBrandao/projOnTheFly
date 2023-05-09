@@ -12,6 +12,6 @@ namespace projOnTheFly.Models
        // public string Rab { get; set; }
         public int Sales { get; set; }
         public bool Status { get; set; }
-        public DateTime Schadule { get; set; }
+        public DateTime Schedule { get; set; }
     }
 }

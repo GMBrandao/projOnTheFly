@@ -33,7 +33,7 @@ namespace projOnTheFly.Passenger.Controller
         [HttpGet("{cpf}", Name = "Get CPF")]
         public async Task<ActionResult<Models.Passenger>> GetPassengerByCPF(string cpf)
         {
-            var validateCpf = new ValidateCPF(cpf);
+            var validateCpf = new ValidateCPFService(cpf);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
@@ -49,7 +49,7 @@ namespace projOnTheFly.Passenger.Controller
         [HttpPost]
         public async Task<ActionResult<PassengerResponse>> Post(PassengerPostRequest passengerRequest)
         {
-            var validateCpf = new ValidateCPF(passengerRequest.CPF);
+            var validateCpf = new ValidateCPFService(passengerRequest.CPF);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
             
@@ -102,7 +102,7 @@ namespace projOnTheFly.Passenger.Controller
         [HttpPut("{cpf}")]
         public async Task<ActionResult> Update(string cpf, PassengerPutRequest passengerRequest)
         {
-            var validateCpf = new ValidateCPF(cpf);
+            var validateCpf = new ValidateCPFService(cpf);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
@@ -149,7 +149,7 @@ namespace projOnTheFly.Passenger.Controller
         [HttpDelete("{cpf}")]
         public async Task<ActionResult> Delete(string cpf)
         {
-            var validateCpf = new ValidateCPF(cpf);
+            var validateCpf = new ValidateCPFService(cpf);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 

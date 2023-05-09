@@ -9,7 +9,7 @@ namespace projOnTheFly.Models
         [StringLength(6)]
         [BsonId]
         public string Rab { get; set; }
-        public string Iata { get; set; }
+      
         public int Capacity { get; set; }
         public DateTime DtRegistry { get; set; }
         public DateTime? DtLastFlight { get; set; }

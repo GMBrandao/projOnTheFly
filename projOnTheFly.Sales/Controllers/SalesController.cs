@@ -2,6 +2,7 @@
 using projOnTheFly.Models;
 using projOnTheFly.Sales.DTO;
 using projOnTheFly.Sales.Service;
+using projOnTheFly.Services;
 
 namespace projOnTheFly.Sales.Controllers
 {
@@ -44,23 +45,22 @@ namespace projOnTheFly.Sales.Controllers
             var saleUpdate = _saleService.GetById(id);
 
             if (saleUpdate== null) return NotFound();
-
-            /* chamada do microsservico de passageiro e de voo (falta criar os microservicos)
-             * 
+            /*
+            
             Flight flightRequest = await FlightService.GetFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
             if (flightRequest == null) return NotFound();
             Passenger passengerRequest = await PassengerService.GetPassengerAsync(saleSoldRequest);
             if(passengerRequest == null) return NotFound();
-            */
+           
 
             if(salePutRequest.Passengers == null && !salePutRequest.Passengers.Any()) return NotFound();
 
-            var flightRequest = new Flight();
+         
 
             Sale sale = new(salePutRequest.Passengers, flightRequest, salePutRequest.Sold);
          
             await _saleService.Update(sale);
-
+            */
             return NoContent();
         }
 
@@ -68,16 +68,38 @@ namespace projOnTheFly.Sales.Controllers
         [HttpPost("sold")]
         public async Task<ActionResult<SalePostSoldRequest>> PostSold(SalePostSoldRequest saleSoldRequest)
         {
+            var passagerCount = saleSoldRequest.Passengers.Count;
+
             if (saleSoldRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
-            /* chamada do microsservico de passageiro e de voo (falta criar os microservicos)
-             * 
-            Flight flightRequest = await FlightService.GetFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
+            // testar para ver se atender essa validação
+            if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount) 
+                return BadRequest("A lista de passageiros contém cpfs duplicados");
+
+            List<Passenger> passengerRequest = await PassengerService.CheckPassengers(saleSoldRequest.Passengers);
+
+            if (passengerRequest == null && !passengerRequest.Any()) return NotFound();
+
+
+            bool invalidPassagenrs = true;
+
+            foreach (var p in passengerRequest)
+            {
+                if (p.Status == false && saleSoldRequest.Passengers.Contains(p.CPF))
+                {
+                    invalidPassagenrs = true;
+                }
+            }
+
+            if (invalidPassagenrs) 
+                return BadRequest("A lista de passageiros contém um inválido");
+
+            Flight? flightRequest = await FlightService.GetFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
+            
             if (flightRequest == null) return NotFound();
-            Passenger passengerRequest = await PassengerService.GetPassengerAsync(saleSoldRequest);
-            if(passengerRequest == null) return NotFound();
-            */
-            var flightRequest = new Flight();
+
+          
+            if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
             Sale saleSold = new(saleSoldRequest.Passengers, flightRequest, saleSoldRequest.Sold );
 
@@ -101,34 +123,5 @@ namespace projOnTheFly.Sales.Controllers
             return CreatedAtAction("GetByFlight", new { Id = sale.Id }, sale);
         }
 
-
-
-        //Regras de serviço que faltam validar 
-        public void Test()
-        {
-            var cpfs = new List<string> { "" };
-            var passagers = new List<Models.Passenger>(); // _passagerService.Get();
-
-
-            // testar para ver se atender essa validação
-            //if (cpfs.Distinct().Count() != cpfs.Count()) return BadRequest("A lista de passageiros contém cpfs duplicados");
-
-            bool invalido = true;
-
-            foreach (var p in passagers)
-            {
-                if (p.Status == false && cpfs.Contains(p.CPF))
-                {
-                    invalido = true;
-                }
-            }
-            
-            //if (invalido) return BadRequest("A lista de passageiros contém um inválido");
-            // valida se os cpfs existem no microservice de passageiro
-            var assentosDisponveis = 1; 
-            
-            // buscar assentos do voo ()
-            //if(cpfs.Count > assentosDisponveis) return BadRequest("Não contém assentos disponiveis para essa venda");
-        }
     }
 }

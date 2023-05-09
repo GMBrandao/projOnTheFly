@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using projOnTheFly.Flights.Service;
 using projOnTheFly.Models;
 using projOnTheFly.Services;
+using FlightService = projOnTheFly.Flights.Service.FlightService;
 
 namespace projOnTheFly.Flights.Controllers
 {
@@ -61,6 +62,15 @@ namespace projOnTheFly.Flights.Controllers
             return StatusCode(200);
 
         }
+        public FlightsController(FlightService flightService)
+        {
+            _flightService = flightService;
+        }
+
+        // api/Flights/{iata}/{rab}/{schedule}
+        [HttpGet("{iata}/{rab}/{schedule}")]
+        public async Task<Flight> GetByFilters(string iata, string rab, DateTime schedule) 
+            => await _flightService.GetByFilters(iata, rab,schedule);
 
     }
 }

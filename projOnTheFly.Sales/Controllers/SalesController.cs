@@ -11,7 +11,6 @@ namespace projOnTheFly.Sales.Controllers
     {
 
         private readonly SaleService _saleService;
-
         public SalesController(SaleService service)
         {
             _saleService = service;

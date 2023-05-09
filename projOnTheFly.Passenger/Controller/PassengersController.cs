@@ -44,7 +44,6 @@ namespace projOnTheFly.Passenger.Controller
                 return BadRequest("Cpf com status inativo ou inexistente");
             }
             return containsPassenger;
-
         }
 
         [HttpPost]

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using projOnTheFly.Aircrafts.DTO;
 using projOnTheFly.Aircrafts.Services;
-using projOnTheFly.Company.Services;
 using projOnTheFly.Models;
 using projOnTheFly.Services;
 

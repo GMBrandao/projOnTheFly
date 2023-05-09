@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 //Configuration Scoped and AppSettings parameters.
 
 
-builder.Services.Configure<ProjOnTheFlyFlightSettings>(builder.Configuration.GetSection("ProjOnTheFlyPassengerSettings"));
+builder.Services.Configure<ProjOnTheFlyFlightSettings>(builder.Configuration.GetSection("ProjOnTheFlyFlightSettings"));
 builder.Services.AddScoped<IProjOnTheFlyFlightSettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlyFlightSettings>>().Value);
 builder.Services.AddScoped<FlightService>();
 

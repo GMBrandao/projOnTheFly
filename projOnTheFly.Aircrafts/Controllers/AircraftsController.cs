@@ -25,7 +25,7 @@ namespace projOnTheFly.Aircrafts.Controllers
         [HttpGet("{rab}", Name = "GetRab")]
         public async Task<ActionResult<Aircraft>> Get(string rab)
         {
-            var aircraft = _aircraftsService.Get(rab);
+            var aircraft = await _aircraftsService.Get(rab.ToUpper());
             if(aircraft == null) return BadRequest("RAB inválido");
             return Ok(aircraft);
         }
@@ -36,7 +36,7 @@ namespace projOnTheFly.Aircrafts.Controllers
             var validRAB = new ValidateRAB(aircraftPost.Rab);
             if (!validRAB.IsValid()) return BadRequest("RAB inválido");
             if (aircraftPost == null) return UnprocessableEntity("Requisição de aeronave inválida");
-            Models.Company company = await GetCompany.GetCompanyAsync(aircraftPost.Company_Cnpj);
+            Models.Company company = await GetCompany.GetCompanyAsync(aircraftPost.cnpjCompany);
             if (company == null) return BadRequest("CNPJ da empresa inválido");
             Aircraft aircraft = new()
             {
@@ -47,6 +47,33 @@ namespace projOnTheFly.Aircrafts.Controllers
                 Company = company,
             };
             await _aircraftsService.Create(aircraft);
+            return Ok();
+        }
+
+        [HttpPut("{rab}")]
+        public async Task<ActionResult<AircraftPut>> Update( string rab, AircraftPut aircraftPut)
+        {
+            var validRAB = new ValidateRAB(rab);
+            if (!validRAB.IsValid()) return BadRequest("RAB inválido");
+            Models.Company company = await GetCompany.GetCompanyAsync(aircraftPut.cnpjCompany);
+            if (company == null) return BadRequest("CNPJ da empresa inválido");
+            
+            Aircraft aircraft = new()
+            {
+                Rab = rab.ToUpper(),
+                Capacity = aircraftPut.Capacity,
+                DtLastFlight = aircraftPut.DtLastFlight,
+                Company = company,
+            };
+
+            var aircraftExists = await GetAircraft.GetAircraftAsync(aircraft.Rab);
+            if (aircraftExists == null)
+                NotFound();
+            else
+                aircraft.DtRegistry = aircraftExists.DtRegistry;
+            
+            await _aircraftsService.Update(aircraft.Rab, aircraft);
+
             return Ok();
         }
 

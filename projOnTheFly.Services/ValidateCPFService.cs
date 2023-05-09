@@ -1,9 +1,9 @@
 ﻿namespace projOnTheFly.Services
 {
-    public class ValidateCPF
+    public class ValidateCPFService
     { 
         private readonly string _cpf;
-        public ValidateCPF(string cpf)
+        public ValidateCPFService(string cpf)
         {
             _cpf = FormatCPF(cpf);
         }

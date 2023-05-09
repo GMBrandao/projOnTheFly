@@ -15,12 +15,7 @@ namespace projOnTheFly.Flights.Service
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Flight>(settings.FlightCollectionName);
         }
-        
         public async Task<List<Flight>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
-
-        public Task<Flight> Get(string iata, string rab, DateTime schedule) => _collection.Find(f => f.Airport.iata == iata && f.Aircraft.Rab ==rab && f.Schedule == schedule).FirstOrDefaultAsync();
-
-
         public async Task<Flight> Create(Flight flight)
         {
             await _collection.InsertOneAsync(flight);

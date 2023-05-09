@@ -23,7 +23,7 @@ namespace projOnTheFly.Services
                 Airport? airport = JsonConvert.DeserializeObject<Airport?>(ender);
                 AirportDTO airportDTO = new()
                 {
-                    Iata = airport.iata,
+                    iata = airport.iata,
                     State = airport.state,
                     City = airport.city,
                     Country = airport.country_id

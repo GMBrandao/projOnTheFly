@@ -34,6 +34,7 @@ namespace projOnTheFly.Flights.Controllers
         public async Task<ActionResult<FlightDTO>> Create(FlightDTO flight)
         {
             AirportDTO airport = await GetAirport.GetAirportAsync(flight.Iata);
+
             Flight f = new()
             {
                 Sale = flight.Sales,

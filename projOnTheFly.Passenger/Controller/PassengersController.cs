@@ -12,8 +12,8 @@ namespace projOnTheFly.Passenger.Controller
     [ApiController]
     public class PassengersController : ControllerBase
     {
-        private readonly PassengerService _passengerService;
-        public PassengersController(PassengerService passengerService)
+        private readonly projOnTheFly.Passenger.Service.PassengerService _passengerService;
+        public PassengersController(projOnTheFly.Passenger.Service.PassengerService passengerService)
         {
             _passengerService = passengerService;
         }

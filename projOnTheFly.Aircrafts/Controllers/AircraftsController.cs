@@ -61,7 +61,6 @@ namespace projOnTheFly.Aircrafts.Controllers
             Aircraft aircraft = new()
             {
                 Rab = rab.ToUpper(),
-                Capacity = aircraftPut.Capacity,
                 DtLastFlight = aircraftPut.DtLastFlight,
                 Company = company,
             };

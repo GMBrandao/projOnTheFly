@@ -13,7 +13,7 @@ namespace projOnTheFly.Models
 
         public string City;
 
-        public  string State;
+        public string Icao;
 
         public string Country;
 

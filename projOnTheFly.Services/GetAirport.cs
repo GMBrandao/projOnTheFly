@@ -17,18 +17,19 @@ namespace projOnTheFly.Services
             try
             {   
                 
-                HttpResponseMessage response = await airportClient.GetAsync("https://localhost:5001/Airport/" + iata);
+                HttpResponseMessage response = await airportClient.GetAsync("https://localhost:44366/Airport/" + iata);
                 response.EnsureSuccessStatusCode();
                 string ender = await response.Content.ReadAsStringAsync();
-                Airport? airport = JsonConvert.DeserializeObject<Airport?>(ender);
-                AirportDTO airportDTO = new()
+                AirportDTO? airport = JsonConvert.DeserializeObject<AirportDTO?>(ender);
+
+                airport = new()
                 {
-                    iata = airport.iata,
-                    State = airport.state,
-                    City = airport.city,
-                    Country = airport.country_id
+                    iata = airport.iata.ToUpper(),
+                    City = airport.City,
+                    Icao = airport.Icao.ToUpper(),
+                    Country = "BR"
                 };
-                return airportDTO;
+                return airport;
             }
             catch (HttpRequestException ex)
             {

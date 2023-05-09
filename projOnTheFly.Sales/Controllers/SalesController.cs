@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using projOnTheFly.Models;
+using projOnTheFly.Passenger.DTO;
 using projOnTheFly.Sales.DTO;
 using projOnTheFly.Sales.Service;
 using projOnTheFly.Services;
@@ -42,8 +43,8 @@ namespace projOnTheFly.Sales.Controllers
         public async Task<ActionResult<SalePutRequest>> PutSales(string id, SalePutRequest salePutRequest)
         {
             Sale saleUpdate = await _saleService.GetById(id);
-            if (saleUpdate== null) return NotFound();
-          
+            if (saleUpdate == null) return NotFound();
+
             saleUpdate.Sold = salePutRequest.Sold;
             saleUpdate.Reserved = !salePutRequest.Sold;
 
@@ -61,13 +62,22 @@ namespace projOnTheFly.Sales.Controllers
             if (saleSoldRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
             // testar para ver se atender essa validação
-            if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount) 
+            if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
-            List<Passenger> passengerRequest = await PassengerService.CheckPassengers(saleSoldRequest.Passengers);
+            PassengerCheck passengerCheck = new()
+            {
+                CpfList = saleSoldRequest.Passengers
+            };
+
+            List<PassengerCheckResponse> passengerRequest = await PassengerService.CheckPassengers(passengerCheck);
 
             if (passengerRequest == null && !passengerRequest.Any()) return NotFound();
 
+            var passengerCheckAge = passengerRequest.First();
+            if (passengerCheckAge.Underage == true)
+                return BadRequest("O primeiro passegeiro da lista não possui idade para " +
+                "realizar a compra da passagem");
 
             bool invalidPassagenrs = true;
 
@@ -79,11 +89,11 @@ namespace projOnTheFly.Sales.Controllers
                 }
             }
 
-            if (invalidPassagenrs) 
+            if (invalidPassagenrs)
                 return BadRequest("A lista de passageiros contém um inválido");
 
             Flight? flightRequest = await FlightService.GetFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
-            
+
             if (flightRequest == null) return NotFound();
 
             if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
@@ -116,10 +126,19 @@ namespace projOnTheFly.Sales.Controllers
             if (saleReservedRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
-            List<Passenger> passengerRequest = await PassengerService.CheckPassengers(saleReservedRequest.Passengers);
+            PassengerCheck passengerCheck = new()
+            {
+                CpfList = saleReservedRequest.Passengers
+            };
+
+            List<PassengerCheckResponse> passengerRequest = await PassengerService.CheckPassengers(passengerCheck);
 
             if (passengerRequest == null && !passengerRequest.Any()) return NotFound();
 
+            var passengerCheckAge = passengerRequest.First();
+            if (passengerCheckAge.Underage == true)
+                return BadRequest("O primeiro passegeiro da lista não possui idade para " +
+                "realizar a compra da passagem");
 
             bool invalidPassagenrs = true;
 

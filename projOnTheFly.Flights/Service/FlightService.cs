@@ -14,18 +14,20 @@ namespace projOnTheFly.Flights.Service
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Flight>(settings.FlightCollectionName);
         }
-        //public async Task<List<Flight>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
-        //public Task<Flight> Get(string cpf) => _collection.Find(c => true).FirstOrDefaultAsync();
+        
+        public async Task<List<Flight>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
+
+        public Task<Flight> Get(string iata, string rab, DateTime schedule) => _collection.Find(f => f.Airport.Iata == iata && f.Aircraft.Rab ==rab && f.Schedule == schedule).FirstOrDefaultAsync();
+
+
         public async Task<Flight> Create(Flight flight)
         {
-            //await _collection.InsertOneAsync(flight);
+            await _collection.InsertOneAsync(flight);
             return flight;
-        }
-        public async Task<Flight> Update(Flight flight)
-        {
-           // await _collection.ReplaceOneAsync(c => true, flight);
-            return flight;
-        }
-        //public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.CPF == cpf);
+        }       
+        
+        public async void Update(string iata, string rab, DateTime schedule, Flight flight) => await  _collection.ReplaceOneAsync(f => f.Airport.Iata == iata && f.Aircraft.Rab == rab && f.Schedule == schedule, flight);
+
+         public async void Delete(string iata, string rab, DateTime schedule, Flight flight) => await _collection.DeleteOneAsync(f => f.Airport.Iata == iata && f.Aircraft.Rab == rab && f.Schedule == schedule);
     }
 }

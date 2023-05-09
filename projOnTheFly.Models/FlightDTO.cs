@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace projOnTheFly.Models
 {
-    public class Flight
+    public class FlightDTO
     {
-        public AirportDTO Airport { get; set; }
-        public Aircraft Aircraft { get; set; }
-        public int Sale { get; set; }
+        public string Iata { get; set; }
+       // public string Rab { get; set; }
+        public int Sales { get; set; }
         public bool Status { get; set; }
-        public DateTime Schedule { get; set; }
+        public DateTime Schadule { get; set; }
     }
 }

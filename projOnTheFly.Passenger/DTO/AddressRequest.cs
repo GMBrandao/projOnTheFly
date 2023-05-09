@@ -8,7 +8,7 @@ namespace projOnTheFly.Passenger.DTO
         [Range(1, int.MaxValue)]
         public int Number { get; set; }
 
-        public  string Complement { get; set; }
+        public  string? Complement { get; set; }
 
         [Required]
         [MaxLength(9)]

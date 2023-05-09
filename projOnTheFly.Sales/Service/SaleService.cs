@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using projOnTheFly.Models;
 using projOnTheFly.Sales.Config;
 
@@ -17,7 +18,7 @@ namespace projOnTheFly.Sales.Service
 
         public async Task<Sale> GetSaleByPassenger(string cpf)
         {
-           return  await _collection.Find(cpf).FirstOrDefaultAsync();
+           return  await _collection.Find(c=> c.Passengers.Contains(cpf)).FirstOrDefaultAsync();
         }
         public async Task<Sale> Create(Sale sale)
         {
@@ -26,9 +27,20 @@ namespace projOnTheFly.Sales.Service
         }
         public async Task<Sale> Update(Sale sale)
         {
-            await _collection.ReplaceOneAsync(c => c.Passenger == sale.Passenger, sale);
+            await _collection.ReplaceOneAsync(c => c.Id == sale.Id, sale);
             return sale;
         }
-       //public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.CPF == cpf);
+       
+        public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.Passengers.Contains(cpf));
+
+        public async Task<ActionResult<Sale>> GetByFlight(string iata, string rab, string schedule)
+        {
+            return await _collection.Find(c => c.Id == $"{iata}|{rab}|{schedule}").FirstOrDefaultAsync();
+        }
+
+        public async Task<ActionResult<Sale>> GetById(string id)
+        {
+            return await _collection.Find(c => c.Id == id).FirstOrDefaultAsync();
+        }
     }
 }

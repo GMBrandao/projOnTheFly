@@ -25,7 +25,7 @@ namespace projOnTheFly.Aircrafts.Controllers
         [HttpGet("{rab}", Name = "GetRab")]
         public async Task<ActionResult<Aircraft>> Get(string rab)
         {
-            var aircraft = _aircraftsService.Get(rab);
+            var aircraft = await _aircraftsService.Get(rab);
             if(aircraft == null) return BadRequest("RAB inválido");
             return Ok(aircraft);
         }

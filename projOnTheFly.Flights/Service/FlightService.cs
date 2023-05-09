@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using projOnTheFly.Flights.Config;
 using projOnTheFly.Models;
@@ -14,8 +15,12 @@ namespace projOnTheFly.Flights.Service
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Flight>(settings.FlightCollectionName);
         }
-        //public async Task<List<Flight>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
-        //public Task<Flight> Get(string cpf) => _collection.Find(c => true).FirstOrDefaultAsync();
+        
+        public async Task<List<Flight>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
+
+        public Task<Flight> Get(string iata, string rab, DateTime schedule) => _collection.Find(f => f.Airport.iata == iata && f.Aircraft.Rab ==rab && f.Schedule == schedule).FirstOrDefaultAsync();
+
+
         public async Task<Flight> Create(Flight flight)
         {
             await _collection.InsertOneAsync(flight);
@@ -47,8 +52,19 @@ namespace projOnTheFly.Flights.Service
             var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
 
             return await _collection.Find(filterAnd).FirstOrDefaultAsync();
-        }
+        }      
+             
+        public ActionResult<Flight> Delete(string iata, string rab, DateTime schedule)
+        {
+            var filter = Builders<Flight>.Filter;
 
-        //public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.CPF == cpf);
+            var filterIata = filter.Eq(x => x.Airport.iata, iata);
+            var filterRab = filter.Eq(x => x.Aircraft.Rab, rab);
+            var filterSchedule = filter.Eq(x => x.Schedule, schedule);
+
+            var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
+
+            return  _collection.FindOneAndDelete(filterAnd);
+        }
     }
 }

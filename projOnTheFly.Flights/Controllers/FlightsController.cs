@@ -35,7 +35,7 @@ namespace projOnTheFly.Flights.Controllers
         {
             AirportDTO airport = await GetAirport.GetAirportAsync(flight.Iata);
 
-            Flight f = new()
+            FlightDTO f = new()
             {
                 Sale = flight.Sales,
                 Status = flight.Status,

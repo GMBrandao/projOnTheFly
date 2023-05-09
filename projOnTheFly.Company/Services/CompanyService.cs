@@ -20,7 +20,7 @@ namespace projOnTheFly.Company.Services
         }
 
         public async Task<List<Models.Company>> Get() => await _company.Find(a => true && a.Status == true).ToListAsync();
-        public  Models.Company Get(string cnpj) =>  _company.Find(c => c.Cnpj == cnpj && c.Status == true).FirstOrDefault(); // mudei de Task<Models.Company> pra model e tirei async await e async do firsoou defaul
+        public  Models.Company Get(string cnpj) =>  _company.Find(c => c.Cnpj == cnpj && c.Status == true).FirstOrDefault(); 
         public Models.Company GetCompany(string cnpj) => _company.Find(c => c.Cnpj == cnpj && c.Status == true).FirstOrDefault();
         public async Task<Models.Company> Create(Models.Company company)
         {

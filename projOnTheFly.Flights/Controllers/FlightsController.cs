@@ -26,19 +26,20 @@ namespace projOnTheFly.Flights.Controllers
         [HttpGet]
         public async Task<List<Flight>> Get() => await _flightService.Get();
 
-        [HttpGet(Name ="GetOneFlight")]
+        [HttpGet("{iata}/{rab}/{schedule}")]
         public async Task<ActionResult<Flight>> Get(string iata, string rab, DateTime schedule) => await _flightService.Get(iata, rab, schedule);
 
 
         [HttpPost]
-        public async Task<ActionResult<FlightDTO>> Create(FlightDTO flight)
+        public async Task<ActionResult<FlightDTO>> Create(FlightDTO flightDTO)
         {
-            AirportDTO airport = await GetAirport.GetAirportAsync(flight.Iata);
+            
+            AirportDTO airport = await GetAirport.GetAirportAsync(flightDTO.Iata);
 
-            FlightDTO f = new()
+            Flight f = new()
             {
-                Sale = flight.Sales,
-                Status = flight.Status,
+                Sale = flightDTO.Sales,
+                Status = flightDTO.Status,
                 Airport = airport
                 
             };

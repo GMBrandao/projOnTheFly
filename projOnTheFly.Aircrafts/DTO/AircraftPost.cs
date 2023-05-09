@@ -12,6 +12,6 @@ namespace projOnTheFly.Aircrafts.DTO
         public int Capacity { get; set; }
         
         [Required]
-        public string Company_Cnpj { get; set; }
+        public string cnpjCompany { get; set; }
     }
 }

@@ -27,8 +27,8 @@ namespace projOnTheFly.Flights.Controllers
         public async Task<List<Flight>> Get() => await _flightService.Get();
 
         [HttpGet("{iata}/{rab}/{schedule}")]
-        public async Task<ActionResult<Flight>> Get(string iata, string rab, DateTime schedule) => await _flightService.Get(iata, rab, schedule);
-
+        public async Task<Flight> GetByFilters(string iata, string rab, DateTime schedule) 
+            => await _flightService.GetByFilters(iata, rab,schedule);
 
         [HttpPost]
         public async Task<ActionResult<FlightDTO>> Create(FlightDTO flightDTO)
@@ -65,9 +65,6 @@ namespace projOnTheFly.Flights.Controllers
 
         }
       
-        [HttpGet("{iata}/{rab}/{schedule}")]
-        public async Task<Flight> GetByFilters(string iata, string rab, DateTime schedule) 
-            => await _flightService.GetByFilters(iata, rab,schedule);
 
     }
 }

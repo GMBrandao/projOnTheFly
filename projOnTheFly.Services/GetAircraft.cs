@@ -15,7 +15,7 @@ namespace projOnTheFly.Services
         {
             try
             {
-                HttpResponseMessage response = await address.GetAsync("https://localhost:7183/api/Aircraft/" + rab);
+                HttpResponseMessage response = await address.GetAsync("https://localhost:7258/api/Aircrafts/" + rab);
                 response.EnsureSuccessStatusCode();
                 string ender = await response.Content.ReadAsStringAsync();
                 Aircraft? aircraft = JsonConvert.DeserializeObject<Aircraft>(ender);

@@ -8,7 +8,6 @@ namespace projOnTheFly.Models
     [JsonObject(MemberSerialization.OptIn)]
     public class Airport
     {
-        //[BsonId]
         [JsonPropertyName("_id")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string id { get; set; }

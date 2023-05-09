@@ -41,10 +41,9 @@ namespace projOnTheFly.Passenger.Controller
 
             if(containsPassenger is null)
             {
-                return BadRequest("Cpf com status inativo");
+                return BadRequest("Cpf com status inativo ou inexistente");
             }
             return containsPassenger;
-
         }
 
         [HttpPost]
@@ -107,10 +106,6 @@ namespace projOnTheFly.Passenger.Controller
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-            var findCpf = _passengerService.Get();
-
-            if (findCpf == null) return NotFound();
-
             if (passengerRequest == null) return UnprocessableEntity("Requisição de passageiro inválida");
 
             AddressDTO? postOffice = await PostOfficeService.GetAddressAsync(passengerRequest.Address.ZipCode!);
@@ -157,10 +152,6 @@ namespace projOnTheFly.Passenger.Controller
             var validateCpf = new ValidateCPF(cpf);
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
-            
-            var findCpf = _passengerService.Get();
-
-            if (findCpf == null) return NotFound();
 
             var passengerDelete = _passengerService.Get(cpf);
             

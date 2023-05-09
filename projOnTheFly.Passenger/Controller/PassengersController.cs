@@ -5,6 +5,7 @@ using projOnTheFly.Models;
 using projOnTheFly.Passenger.DTO;
 using projOnTheFly.Passenger.Service;
 using projOnTheFly.Services;
+using PassengerService = projOnTheFly.Passenger.Service.PassengerService;
 
 namespace projOnTheFly.Passenger.Controller
 {
@@ -25,7 +26,7 @@ namespace projOnTheFly.Passenger.Controller
 
             if (containsPassenger.Count()==0)
             {
-                return BadRequest("Não existem passageiros com status ativos");
+                return BadRequest("Não existem passageiros com status ativos ou não existem passageiros cadastrados");
             }
             return containsPassenger;
             
@@ -45,6 +46,37 @@ namespace projOnTheFly.Passenger.Controller
             }
             return containsPassenger;
         }
+
+
+
+        [HttpPost ("ckeck")]
+        //criar a verificacao
+        public async Task<ActionResult<PassengerCheck>>PostCheck(PassengerCheck passengerCheck)
+        {
+            List<PassengerCheck> passengerCorrect = await _passengerService.Get(List passengerCheck.CPF);
+
+
+            if (passengerCorrect == null && !passengerCorrect.Any()) return NotFound();
+
+
+            bool invalidPassagenrs = true;
+
+            foreach (var p in passengerCorrect)
+            {
+                if (p.Status == false && passengerCorrect.Passengers.Contains(p.CPF))
+                {
+                    invalidPassagenrs = true;
+                }
+            }
+
+            if (invalidPassagenrs)
+                return BadRequest("A lista de passageiros contém um inválido");
+
+            return passengerCheck;
+        }
+
+
+
 
         [HttpPost]
         public async Task<ActionResult<PassengerResponse>> Post(PassengerPostRequest passengerRequest)

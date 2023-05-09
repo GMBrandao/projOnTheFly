@@ -30,21 +30,32 @@ namespace projOnTheFly.Company.Controllers
         [HttpGet("{cnpj}")]
         public async Task<ActionResult<Models.Company>> Get(string cnpj)
         {
+            
             Models.Company company = null;
             string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
             if (cnpj.Length == 14)
             {
                 formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
+                var validated = ValidatesCnpj.IsCnpj(formatedCnpj);
+                if (!validated)
+                {
+                    return BadRequest("CNPJ INVÁLIDO");
+                }
             }
             else
-            {
-                company = await _companyService.Get(cnpjFixed);
+            {                
+                var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
+                if (!validated)
+                {
+                    return BadRequest("CNPJ INVÁLIDO");
+                }
+                company =  _companyService.Get(cnpjFixed);
                 if (company == null) return NotFound();
                 if (company.Status == false) return BadRequest("STATUS INATIVO");
                 return  company;
             }
-            company = await _companyService.Get(formatedCnpj);
+            company =  _companyService.Get(formatedCnpj);
             if (company == null) return NotFound();
             if (company.Status == false) return BadRequest("STATUS INATIVO");
             return  company;
@@ -89,6 +100,10 @@ namespace projOnTheFly.Company.Controllers
                 }
 
             };
+            if( (company.NameOpt == null )  || (company.NameOpt =="string") || (company.NameOpt == ""))
+            {
+                company.NameOpt = companyRequest.Name;
+            }
             await  _companyService.Create(company);
             return StatusCode(201);
         }
@@ -115,7 +130,7 @@ namespace projOnTheFly.Company.Controllers
                 return BadRequest("Cnpj inválido");
             }
 
-            var found = await _companyService.Get(cnpjFixed);
+            var found =  _companyService.Get(cnpjFixed);
             if (found.Status == false) return BadRequest("STATUS INATIVO");
             if (found == null) return BadRequest(NotFound());
 
@@ -140,7 +155,12 @@ namespace projOnTheFly.Company.Controllers
                     ZipCode = data.ZipCode,
                     State = data.State,
                 }
-            };           
+            };
+
+            if ((company.NameOpt == null) || (company.NameOpt == "string") || (company.NameOpt == ""))
+            {
+                company.NameOpt = company.Name;
+            }
 
             _companyService.Update(cnpjFixed, company);
 
@@ -152,25 +172,34 @@ namespace projOnTheFly.Company.Controllers
         [HttpDelete("{cnpj}")]
         public async Task<ActionResult> Delete(string cnpj)
         {
-            string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
-            string formatedCnpj = "";
-
-            var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
-            if (!validated)
-            {
-                return BadRequest("Cnpj inválido");
-            }
-            var found = _companyService.Get(cnpjFixed);
-            if (found == null) return NotFound();
+            string formatedCnpj = "";           
 
             if (cnpj.Length == 14)
             {
                 formatedCnpj = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
-                _companyService.Delete(formatedCnpj);
+                var validated = ValidatesCnpj.IsCnpj(formatedCnpj);
+                if (!validated)
+                {
+                    return BadRequest("Cnpj inválido");
+                }
+                var found = _companyService.Get(formatedCnpj);
+                if (found == null) return NotFound();
+
+                 _companyService.AddInDeletedCollection(found); 
+                    _companyService.Delete(formatedCnpj); 
                 return StatusCode(200);
             }
             else
             {
+                string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
+                var validated = ValidatesCnpj.IsCnpj(cnpjFixed);
+                if (!validated)
+                {
+                    return BadRequest("Cnpj inválido");
+                }
+                var found = _companyService.Get(cnpjFixed);
+                if (found == null) return NotFound();
+                _companyService.AddInDeletedCollection(found); 
                 _companyService.Delete(cnpjFixed);
                 return StatusCode(200);
             }

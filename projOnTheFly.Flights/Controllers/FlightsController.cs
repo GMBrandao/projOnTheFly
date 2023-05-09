@@ -31,15 +31,20 @@ namespace projOnTheFly.Flights.Controllers
             => await _flightService.GetByFilters(iata, rab,schedule);
 
         [HttpPost]
-        public async Task<ActionResult<FlightDTO>> Create(FlightDTO flight)
+        public async Task<ActionResult<FlightDTO>> Create(FlightDTO flightDTO)
         {
-            AirportDTO airport = await GetAirport.GetAirportAsync(flight.Iata);
+            
+            AirportDTO airport = await GetAirport.GetAirportAsync(flightDTO.Iata);
+            if (flightDTO.Status == false) return BadRequest("status de vôo cancelado");            
+            Aircraft aircraft = await GetAircraft.GetAircraftAsync(flightDTO.Rab);
 
             Flight f = new()
             {
-                Sale = flight.Sales,
-                Status = flight.Status,
-                Airport = airport
+                Sale = flightDTO.Sales,
+                Status = flightDTO.Status,
+                Airport = airport,
+                Aircraft = aircraft,
+                Schedule = DateTime.Now,
                 
             };
 

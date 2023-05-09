@@ -86,7 +86,6 @@ namespace projOnTheFly.Sales.Controllers
             
             if (flightRequest == null) return NotFound();
 
-          
             if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
             Sale saleSold = new(saleSoldRequest.Passengers, flightRequest);

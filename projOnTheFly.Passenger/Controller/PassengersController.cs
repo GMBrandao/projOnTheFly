@@ -38,7 +38,9 @@ namespace projOnTheFly.Passenger.Controller
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-             var containsPassenger =  await _passengerService.Get(cpf);
+             var containsPassenger =  await _passengerService.
+                
+                (cpf);
 
             if(containsPassenger is null)
             {
@@ -51,17 +53,19 @@ namespace projOnTheFly.Passenger.Controller
 
         [HttpPost ("ckeck")]
         //criar a verificacao
-        public async Task<ActionResult<PassengerCheck>>PostCheck(PassengerCheck passengerCheck)
+        public async Task<ActionResult<PassengerCheckResponse>>PostCheck(PassengerCheck passengerCheck)
         {
-            List<PassengerCheck> passengerCorrect = await _passengerService.Get(List passengerCheck.CPF);
+            List<PassengerCheck> passengerCorrect = await _passengerService.PostCheck(passengerCheck.CpfList);
 
 
             if (passengerCorrect == null && !passengerCorrect.Any()) return NotFound();
 
 
+
+
             bool invalidPassagenrs = true;
 
-            foreach (var p in passengerCorrect)
+            foreach (var p in passengerCheckResponse)
             {
                 if (p.Status == false && passengerCorrect.Passengers.Contains(p.CPF))
                 {
@@ -71,8 +75,8 @@ namespace projOnTheFly.Passenger.Controller
 
             if (invalidPassagenrs)
                 return BadRequest("A lista de passageiros contém um inválido");
-
-            return passengerCheck;
+             
+            return passengerCheckResponse;
         }
 
 

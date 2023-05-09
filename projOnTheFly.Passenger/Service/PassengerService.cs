@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using projOnTheFly.Passenger.DTO;
 using projOnTheFly.Passenger.Settings;
 
 namespace projOnTheFly.Passenger.Service
@@ -16,6 +17,8 @@ namespace projOnTheFly.Passenger.Service
 
         public Task<Models.Passenger> Get(string cpf) => _collection.Find(c => c.CPF == cpf && c.Status == true).FirstOrDefaultAsync();
 
+        public async Task<List<PassengerCheckResponse>> PostCheck(List<string> cpfList) => await _collection.Find(c =>  c.Status == true).ToListAsync();
+       
         public async Task<Models.Passenger> Create(Models.Passenger passenger)
         {
             await _collection.InsertOneAsync(passenger);
@@ -27,5 +30,6 @@ namespace projOnTheFly.Passenger.Service
             return passenger;
         }
         public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.CPF == cpf);
+
     }
 }

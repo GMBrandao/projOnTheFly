@@ -30,7 +30,7 @@ namespace projOnTheFly.Company.Controllers
         [HttpGet("{cnpj}")]
         public async Task<ActionResult<Models.Entities.Company>> Get(string cnpj)
         {
-            
+            cnpj = cnpj.Trim();
             Models.Entities.Company company = null;
             string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
@@ -66,6 +66,7 @@ namespace projOnTheFly.Company.Controllers
         [HttpPost]
         public async Task<ActionResult<CompanyPostRequest>> Create(CompanyPostRequest companyRequest)
         {
+            companyRequest.Cnpj = companyRequest.Cnpj.Trim();
             var validated = ValidatesCnpj.IsCnpj(companyRequest.Cnpj);
             if (!validated)
             {
@@ -113,8 +114,9 @@ namespace projOnTheFly.Company.Controllers
         public async Task<ActionResult<CompanyPutRequest>> Update(string cnpj, CompanyPutRequest companyPutRequest)
         {
             string cnpjFixed = "";
-            
-                                   
+            cnpj = cnpj.Trim();
+
+
             if (cnpj.Length == 14)
             {
                 cnpjFixed = Regex.Replace(cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");               
@@ -172,6 +174,7 @@ namespace projOnTheFly.Company.Controllers
         [HttpDelete("{cnpj}")]
         public async Task<ActionResult> Delete(string cnpj)
         {
+            cnpj = cnpj.Trim();
             string formatedCnpj = "";           
 
             if (cnpj.Length == 14)

@@ -9,13 +9,14 @@ namespace projOnTheFly.Models
     public class AirportDTO
     {
         
-        public string iata;
+        public string iata { get; set; }
 
-        public string City;
+        public string City { get; set; }
 
-        public  string State;
+        public  string State { get; set; }
 
-        public string Country;
+        public string Country { get; set; }
+        public string Icao { get; set; }
 
     }
 }

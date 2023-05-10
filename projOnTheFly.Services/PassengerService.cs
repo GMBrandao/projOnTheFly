@@ -8,7 +8,7 @@ namespace projOnTheFly.Services
     public class PassengerService
     {
         static readonly HttpClient address = new HttpClient();
-        public static async Task<List<PassengerCheckResponse>> CheckPassengers(PassengerCheck passengerCheck)
+        public static async Task<List<PassengerCheckResponse>> CheckPassengersAsync(PassengerCheck passengerCheck)
         {
             try
             {

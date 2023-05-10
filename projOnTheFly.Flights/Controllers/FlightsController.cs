@@ -43,18 +43,15 @@ namespace projOnTheFly.Flights.Controllers
         {
             
             AirportDTO airport = await GetAirport.GetAirportAsync(flightDTO.Iata);
-            if (flightDTO.Status == false) return BadRequest("status de vôo cancelado");            
             Aircraft aircraft = await GetAircraft.GetAircraftAsync(flightDTO.Rab);
             if (aircraft.Company.Status == false) return BadRequest("Companhia com restrição");
 
             Flight f = new()
-            {
+            {                
                 
-                Status = flightDTO.Status,
                 Airport = airport,
                 Aircraft = aircraft,
-                Schedule = DateTime.Now,
-                
+                Schedule = DateTime.Now,                
             };
 
              await _flightService.Create(f);

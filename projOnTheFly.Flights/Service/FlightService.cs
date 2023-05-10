@@ -61,7 +61,7 @@ namespace projOnTheFly.Flights.Service
 
             var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
 
-            var filterUpdate = Builders<Flight>.Update.Inc(x => x.Aircraft.Capacity, (number * -1));
+            var filterUpdate = Builders<Flight>.Update.Inc(x => x.Aircraft.Capacity, (number * 1));
 
             await _collection.UpdateOneAsync(filterAnd, filterUpdate);
         }

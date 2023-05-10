@@ -193,7 +193,7 @@ namespace projOnTheFly.Sales.Controllers
                 return BadRequest("Esse vôo foi cancelado");
             }
 
-            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponíveis para essa venda");
+            if((flightRequest.Sale + passagerCount) < flightRequest.Aircraft.Capacity) return BadRequest("Não contém assentos disponíveis para essa venda");
 
             Sale sale = new(saleReservedRequest.Passengers, flightRequest);
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using projOnTheFly.Aircrafts.DTO;
 using projOnTheFly.Aircrafts.Services;
 using projOnTheFly.Company.Services;
-using projOnTheFly.Models;
+using projOnTheFly.Models.Entities;
 using projOnTheFly.Services;
 
 namespace projOnTheFly.Aircrafts.Controllers
@@ -36,7 +36,7 @@ namespace projOnTheFly.Aircrafts.Controllers
             var validRAB = new ValidateRAB(aircraftPost.Rab);
             if (!validRAB.IsValid()) return BadRequest("RAB inválido");
             if (aircraftPost == null) return UnprocessableEntity("Requisição de aeronave inválida");
-            Models.Company company = await GetCompany.GetCompanyAsync(aircraftPost.cnpjCompany);
+            Models.Entities.Company company = await GetCompany.GetCompanyAsync(aircraftPost.cnpjCompany);
             if (company == null) return BadRequest("CNPJ da empresa inválido");
             Aircraft aircraft = new()
             {
@@ -55,7 +55,7 @@ namespace projOnTheFly.Aircrafts.Controllers
         {
             var validRAB = new ValidateRAB(rab);
             if (!validRAB.IsValid()) return BadRequest("RAB inválido");
-            Models.Company company = await GetCompany.GetCompanyAsync(aircraftPut.cnpjCompany);
+            Models.Entities.Company company = await GetCompany.GetCompanyAsync(aircraftPut.cnpjCompany);
             if (company == null) return BadRequest("CNPJ da empresa inválido");
             
             Aircraft aircraft = new()

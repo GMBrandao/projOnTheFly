@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using projOnTheFly.Models;
-using projOnTheFly.Passenger.DTO;
+using projOnTheFly.Models.DTO;
+using projOnTheFly.Models.Entities;
 using projOnTheFly.Sales.DTO;
 using projOnTheFly.Sales.Service;
 using projOnTheFly.Services;
@@ -40,7 +40,7 @@ namespace projOnTheFly.Sales.Controllers
 
         //api/sales/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<SalePutRequest>> PutSales(string id, SalePutRequest salePutRequest)
+        public async Task<ActionResult<SalePutRequestDTO>> PutSales(string id, SalePutRequestDTO salePutRequest)
         {
             Sale saleUpdate = await _saleService.GetByIdAsync(id);
             if (saleUpdate == null) return NotFound();
@@ -55,7 +55,7 @@ namespace projOnTheFly.Sales.Controllers
 
         //api/sales
         [HttpPost("sold")]
-        public async Task<ActionResult<SalePostSoldRequest>> PostSold(SalePostSoldRequest saleSoldRequest)
+        public async Task<ActionResult<SalePostSoldRequestDTO>> PostSold(SalePostSoldRequestDTO saleSoldRequest)
         {
             var passagerCount = saleSoldRequest.Passengers.Count;
 
@@ -65,12 +65,12 @@ namespace projOnTheFly.Sales.Controllers
             if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
-            PassengerCheck passengerCheck = new()
+            PassengerCheckDTO passengerCheck = new()
             {
                 CpfList = saleSoldRequest.Passengers
             };
 
-            List<PassengerCheckResponse> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
+            List<PassengerCheckResponseDTO> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
 
             if (passengerRequest == null || !passengerRequest.Any()) return NotFound();
 
@@ -97,7 +97,7 @@ namespace projOnTheFly.Sales.Controllers
 
             if (flightRequest == null) return NotFound();
 
-            if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
+            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
             Sale sale = new(saleSoldRequest.Passengers, flightRequest);
 
@@ -108,7 +108,7 @@ namespace projOnTheFly.Sales.Controllers
             await _saleService.CreateAsync(sale);
             await FlightService.DecrementSaleAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule, passagerCount);
 
-            SalePostSoldResponse saleResponse = new()
+            SalePostSoldResponseDTO saleResponse = new()
             {
                 Id = sale.Id,
                 Sold = sale.Sold,
@@ -119,7 +119,7 @@ namespace projOnTheFly.Sales.Controllers
 
         //api/sales
         [HttpPost("reserved")]
-        public async Task<ActionResult<SalePostReservedRequest>> PostReserved(SalePostReservedRequest saleReservedRequest)
+        public async Task<ActionResult<SalePostReservedRequestDTO>> PostReserved(SalePostReservedRequestDTO saleReservedRequest)
         {
             var passagerCount = saleReservedRequest.Passengers.Count;
 
@@ -129,12 +129,12 @@ namespace projOnTheFly.Sales.Controllers
             if (saleReservedRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
-            PassengerCheck passengerCheck = new()
+            PassengerCheckDTO passengerCheck = new()
             {
                 CpfList = saleReservedRequest.Passengers
             };
 
-            List<PassengerCheckResponse> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
+            List<PassengerCheckResponseDTO> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
 
             if (passengerRequest == null || !passengerRequest.Any()) return NotFound();
 
@@ -162,7 +162,7 @@ namespace projOnTheFly.Sales.Controllers
             if (flightRequest == null) return NotFound();
 
 
-            if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
+            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
             Sale sale = new(saleReservedRequest.Passengers, flightRequest);
 
@@ -174,7 +174,7 @@ namespace projOnTheFly.Sales.Controllers
             await FlightService.DecrementSaleAsync(saleReservedRequest.Iata, saleReservedRequest.Rab, saleReservedRequest.Schedule, passagerCount);
 
 
-            SalePostSoldResponse saleResponse = new()
+            SalePostSoldResponseDTO saleResponse = new()
             {
                 Id = sale.Id,
                 Sold = sale.Sold,

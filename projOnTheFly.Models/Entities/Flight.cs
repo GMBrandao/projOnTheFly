@@ -1,18 +1,18 @@
 
 
 
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using projOnTheFly.Models.DTO;
 
-
-namespace projOnTheFly.Models
+namespace projOnTheFly.Models.Entities
 {
     public class Flight
     {
 
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } 
+        public string Id { get; set; }
 
         public AirportDTO Airport { get; set; }
         public Aircraft Aircraft { get; set; }

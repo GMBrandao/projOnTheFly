@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace projOnTheFly.Models
+namespace projOnTheFly.Models.DTO
 {
     public class FlightDTO
     {

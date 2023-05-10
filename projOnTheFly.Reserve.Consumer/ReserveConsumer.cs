@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using projOnTheFly.Models.Entities;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -32,7 +33,7 @@ namespace projOnTheFly.Reserve.Consumer
                     {
                         var body = ea.Body.ToArray();
                         var returnMessage = Encoding.UTF8.GetString(body);
-                        var reserve = JsonConvert.DeserializeObject<Models.Sale>(returnMessage);
+                        var reserve = JsonConvert.DeserializeObject<Sale>(returnMessage);
 
                         /* para chamar salvar direto no mongo 
                          * 

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using projOnTheFly.Flights.DTO;
 using projOnTheFly.Flights.Service;
-using projOnTheFly.Models;
-using projOnTheFly.Passenger.DTO;
+using projOnTheFly.Models.DTO;
+using projOnTheFly.Models.Entities;
 using projOnTheFly.Services;
 using FlightService = projOnTheFly.Flights.Service.FlightService;
 
@@ -32,14 +32,14 @@ namespace projOnTheFly.Flights.Controllers
             => await _flightService.CheckFlight(flightCheck.Iata, flightCheck.Rab, flightCheck.Schedule);
 
         [HttpPost("decrement")]
-        public async Task<ActionResult> DecrementSaleFlight(FlightDecrementCheck flightCheck)
+        public async Task<ActionResult> DecrementSaleFlight(FlightDecrementCheckDTO flightCheck)
         {
             await _flightService.DecrementSale(flightCheck.Iata, flightCheck.Rab, flightCheck.Schedule, flightCheck.Number);
             return Ok();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Models.FlightDTO>> Create(Models.FlightDTO flightDTO)
+        public async Task<ActionResult<Models.DTO.FlightDTO>> Create(Models.DTO.FlightDTO flightDTO)
         {
             
             AirportDTO airport = await GetAirport.GetAirportAsync(flightDTO.Iata);

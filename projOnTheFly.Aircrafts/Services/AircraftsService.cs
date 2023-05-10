@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 using projOnTheFly.Aircrafts.Config;
-using projOnTheFly.Models;
+using projOnTheFly.Models.Entities;
 
 namespace projOnTheFly.Aircrafts.Services
 {
@@ -12,7 +12,7 @@ namespace projOnTheFly.Aircrafts.Services
         {
             var client = new MongoClient(aircraftSettings.ConnectionString);
             var database = client.GetDatabase(aircraftSettings.DatabaseName);
-            _aircraft = database.GetCollection<Models.Aircraft>(aircraftSettings.AircraftsCollectionName);
+            _aircraft = database.GetCollection<Aircraft>(aircraftSettings.AircraftsCollectionName);
         }
 
         public Task<List<Aircraft>> GetAll() => _aircraft.Find<Aircraft>(a => true).ToListAsync();

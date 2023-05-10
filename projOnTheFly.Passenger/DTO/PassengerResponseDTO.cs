@@ -2,7 +2,7 @@
 
 namespace projOnTheFly.Passenger.DTO
 {
-    public class PassengerResponse
+    public class PassengerResponseDTO
     {
         public string Name { get; set; }
         public DateTime DtRegister { get; set; }

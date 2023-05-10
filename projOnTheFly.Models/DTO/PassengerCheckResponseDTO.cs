@@ -1,6 +1,6 @@
-﻿namespace projOnTheFly.Passenger.DTO
+﻿namespace projOnTheFly.Models.DTO
 {
-    public class PassengerCheckResponse
+    public class PassengerCheckResponseDTO
     {
         public string CPF { get; set; }
         public string Name { get; set; }

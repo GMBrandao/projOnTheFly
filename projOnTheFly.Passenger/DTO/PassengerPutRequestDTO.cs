@@ -3,15 +3,9 @@ using projOnTheFly.Models;
 
 namespace projOnTheFly.Passenger.DTO
 {
-    public class PassengerPostRequest
+    public class PassengerPutRequestDTO
     {
-
         [Required]
-        [StringLength(14)]
-        public string CPF { get; set; }
-
-        [Required]
-        [MaxLength(10)]
         [MinLength(3)]
         public string Name { get; set; }
 
@@ -30,6 +24,6 @@ namespace projOnTheFly.Passenger.DTO
         public bool Status { get; set; }
 
         [Required]
-        public AddressRequest Address { get; set; }
+        public AddressRequestDTO Address { get; set; }
     }
 }

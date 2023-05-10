@@ -18,7 +18,13 @@ namespace projOnTheFly.Aircrafts.Controllers
         }
 
         [HttpGet]
-        public Task<List<Aircraft>> Get() => _aircraftsService.GetAll();
+        public async Task<ActionResult<List<Aircraft>>> Get()
+        {
+            var aircraftExists = await _aircraftsService.GetAll();
+            if (aircraftExists.Count == 0) return NotFound("Não há aeronaves cadastradas");
+            return Ok(aircraftExists);
+
+        }
 
         [HttpGet("{rab}", Name = "GetRab")]
         public async Task<ActionResult<Aircraft>> Get(string rab)
@@ -41,21 +47,23 @@ namespace projOnTheFly.Aircrafts.Controllers
                 Rab = aircraftPost.Rab.ToUpper(),
                 Capacity = aircraftPost.Capacity,
                 DtRegistry = DateTime.Now,
-                DtLastFlight =  null,
+                DtLastFlight = null,
                 Company = company,
             };
             await _aircraftsService.Create(aircraft);
             return Ok();
         }
 
-        [HttpPut("{rab}")]
+        [HttpPut("{rab}",Name = "Update")]
         public async Task<ActionResult<AircraftPut>> Update( string rab, AircraftPut aircraftPut)
         {
+            var aircraftExists = await GetAircraft.GetAircraftAsync(rab);
+            if (aircraftExists == null) return NotFound();
             var validRAB = new ValidateRAB(rab);
             if (!validRAB.IsValid()) return BadRequest("RAB inválido");
             Models.Company company = await GetCompany.GetCompanyAsync(aircraftPut.cnpjCompany);
             if (company == null) return BadRequest("CNPJ da empresa inválido");
-            
+
             Aircraft aircraft = new()
             {
                 Rab = rab.ToUpper(),
@@ -63,22 +71,19 @@ namespace projOnTheFly.Aircrafts.Controllers
                 Company = company,
             };
 
-            var aircraftExists = await GetAircraft.GetAircraftAsync(aircraft.Rab);
-            if (aircraftExists == null)
-                NotFound();
-            else
-                aircraft.DtRegistry = aircraftExists.DtRegistry;
-            
+            aircraft.DtRegistry = aircraftExists.DtRegistry;
+
             await _aircraftsService.Update(aircraft.Rab, aircraft);
 
             return Ok();
         }
 
         [HttpDelete]
-        public ActionResult Delete(string rab)
+        public async Task<ActionResult> Delete(string rab)
         {
-            if(rab == null) return NotFound();
-            _aircraftsService.Delete(rab);
+            var aircraftExists = await GetAircraft.GetAircraftAsync(rab);
+            if (aircraftExists == null) return NotFound();
+             await _aircraftsService.Delete(rab);
             return Ok();
         }
 

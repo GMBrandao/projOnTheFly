@@ -61,7 +61,6 @@ namespace projOnTheFly.Sales.Controllers
 
             if (saleSoldRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
-            // testar para ver se atender essa validação
             if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
@@ -126,7 +125,6 @@ namespace projOnTheFly.Sales.Controllers
 
             if (saleReservedRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
-            // testar para ver se atender essa validação
             if (saleReservedRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
@@ -162,8 +160,12 @@ namespace projOnTheFly.Sales.Controllers
 
             if (flightRequest == null) return NotFound();
 
+            if (flightRequest.Status != true)
+            {
+                return BadRequest("Esse vôo foi cancelado");
+            }
 
-            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
+            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponíveis para essa venda");
 
             Sale sale = new(saleReservedRequest.Passengers, flightRequest);
 
@@ -174,7 +176,6 @@ namespace projOnTheFly.Sales.Controllers
             await _saleService.CreateAsync(sale);
             await FlightService.DecrementSaleAsync(saleReservedRequest.Iata, saleReservedRequest.Rab, saleReservedRequest.Schedule, passagerCount);
 
-
             SalePostSoldResponseDTO saleResponse = new()
             {
                 Id = sale.Id,
@@ -184,9 +185,8 @@ namespace projOnTheFly.Sales.Controllers
             return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);
         }
 
-
         //api/sales/{id}
-        [HttpDelete("{id/}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {
             await _saleService.DeleteOneAsync(id);

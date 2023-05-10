@@ -1,4 +1,6 @@
-﻿namespace projOnTheFly.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace projOnTheFly.Models.DTO
 {
     public class FlightDecrementCheckDTO
     {
@@ -11,9 +13,20 @@
             Number = number;
         }
 
+        [Required]
+        [StringLength(3)]
         public string Iata { get; set; }
+
+        [Required]
+        [MaxLength(6)]
         public string Rab { get; set; }
+
+        [Required]
+       
         public DateTime Schedule { get; set; }
+       
+        [Required]
+        [Range(1, int.MaxValue)]
         public int Number { get; set; }
     }
 }

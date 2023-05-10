@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\projOnTheFly.Models\projOnTheFly.Models.csproj" />
+    <ProjectReference Include="..\projOnTheFly.Sales\projOnTheFly.Sales.csproj" />
   </ItemGroup>
 
 </Project>

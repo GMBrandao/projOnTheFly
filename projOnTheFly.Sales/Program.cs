@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using projOnTheFly.Sales.Config;
 using projOnTheFly.Sales.Service;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,7 @@ builder.Services.Configure<ProjOnTheFlySaleSettings>(builder.Configuration.GetSe
 builder.Services.AddScoped<IProjOnTheFlySaleSettings>(s => s.GetRequiredService<IOptions<ProjOnTheFlySaleSettings>>().Value);
 builder.Services.AddScoped<SaleService>();
 
-
-
+builder.Services.AddScoped<ConnectionFactory>();
 
 var app = builder.Build();
 

@@ -1,5 +1,7 @@
 ﻿using System.Text;
+using MongoDB.Driver;
 using Newtonsoft.Json;
+using projOnTheFly.Sales.Config;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -15,7 +17,7 @@ namespace projOnTheFly.Sale.Consumers
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: QUEUE_NAME,
+                    channel.QueueDeclare(queue: "Sales",
                                   durable: false,
                                   exclusive: false,
                                   autoDelete: false,
@@ -29,17 +31,13 @@ namespace projOnTheFly.Sale.Consumers
                         var returnMessage = Encoding.UTF8.GetString(body);
                         var sale = JsonConvert.DeserializeObject<Models.Entities.Sale>(returnMessage);
 
-                        /* para chamar salvar direto no mongo 
-                         * 
-                         * 
-                        var client = new MongoClient(settings.ConnectionString);
-                        var database = client.GetDatabase(settings.DatabaseName);
-                        _collection = database.GetCollection<Sale>(settings.SaleCollectionName);
-                        */
-
+                        var client = new MongoClient("mongodb://localhost:27017");
+                        var database = client.GetDatabase("projOnTheFlySale");
+                        var _collection = database.GetCollection<Models.Entities.Sale>("Sale");
+                        _collection.InsertOne(sale);
                     };
 
-                    channel.BasicConsume(queue: QUEUE_NAME,
+                    channel.BasicConsume(queue: "Sales",
                                          autoAck: true,
                                          consumer: consumer);
 

@@ -61,7 +61,6 @@ namespace projOnTheFly.Sales.Controllers
 
             if (saleSoldRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
-            // testar para ver se atender essa validação
             if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
@@ -72,7 +71,7 @@ namespace projOnTheFly.Sales.Controllers
 
             List<PassengerCheckResponseDTO> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
 
-            if (passengerRequest == null || !passengerRequest.Any()) return NotFound();
+            if (passengerRequest == null || !passengerRequest.Any()) return BadRequest("Dados de passageiros não encontrados");
 
             var passengerCheckAge = passengerRequest.First();
 
@@ -106,6 +105,7 @@ namespace projOnTheFly.Sales.Controllers
 
             //Mover essas duas linhas para o consumer do rabbitmq
             await _saleService.CreateAsync(sale);
+
             await FlightService.DecrementSaleAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule, passagerCount);
 
             SalePostSoldResponseDTO saleResponse = new()
@@ -125,7 +125,6 @@ namespace projOnTheFly.Sales.Controllers
 
             if (saleReservedRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
-            // testar para ver se atender essa validação
             if (saleReservedRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
@@ -161,8 +160,12 @@ namespace projOnTheFly.Sales.Controllers
 
             if (flightRequest == null) return NotFound();
 
+            if (flightRequest.Status != true)
+            {
+                return BadRequest("Esse vôo foi cancelado");
+            }
 
-            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
+            if (flightRequest.Aircraft.Capacity < passagerCount) return BadRequest("Não contém assentos disponíveis para essa venda");
 
             Sale sale = new(saleReservedRequest.Passengers, flightRequest);
 
@@ -173,7 +176,6 @@ namespace projOnTheFly.Sales.Controllers
             await _saleService.CreateAsync(sale);
             await FlightService.DecrementSaleAsync(saleReservedRequest.Iata, saleReservedRequest.Rab, saleReservedRequest.Schedule, passagerCount);
 
-
             SalePostSoldResponseDTO saleResponse = new()
             {
                 Id = sale.Id,
@@ -183,5 +185,13 @@ namespace projOnTheFly.Sales.Controllers
             return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);
         }
 
+        //api/sales/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string id)
+        {
+            await _saleService.DeleteOneAsync(id);
+
+            return NoContent();
+        }
     }
 }

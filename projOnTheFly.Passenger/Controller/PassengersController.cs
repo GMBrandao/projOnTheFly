@@ -5,6 +5,7 @@ using projOnTheFly.Models;
 using projOnTheFly.Passenger.DTO;
 using projOnTheFly.Passenger.Service;
 using projOnTheFly.Services;
+using PassengerService = projOnTheFly.Passenger.Service.PassengerService;
 
 namespace projOnTheFly.Passenger.Controller
 {
@@ -21,15 +22,15 @@ namespace projOnTheFly.Passenger.Controller
         [HttpGet]
         public async Task<ActionResult<List<Models.Passenger>>> GetAll()
         {
-            var containsPassenger = await  _passengerService.Get();
+            var containsPassenger = await  _passengerService.GetAsync();
 
             if (containsPassenger.Count()==0)
             {
-                return BadRequest("Não existem passageiros com status ativos");
+                return BadRequest("Não existem passageiros com status ativos ou não existem passageiros cadastrados");
             }
             return containsPassenger;
-            
         }
+
         [HttpGet("{cpf}", Name = "Get CPF")]
         public async Task<ActionResult<Models.Passenger>> GetPassengerByCPF(string cpf)
         {
@@ -37,13 +38,26 @@ namespace projOnTheFly.Passenger.Controller
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-             var containsPassenger =  await _passengerService.Get(cpf);
+             var containsPassenger =  await _passengerService.GetAsync(cpf);
 
             if(containsPassenger is null)
             {
                 return BadRequest("Cpf com status inativo ou inexistente");
             }
             return containsPassenger;
+        }
+
+
+        [HttpPost ("check")]
+        //criar a verificacao
+        public async Task<ActionResult<List<PassengerCheckResponse>>>PostCheck(PassengerCheck passengerCheck)
+        {
+            List<PassengerCheckResponse> passengerCorrect = await _passengerService.PostCheckAsync(passengerCheck.CpfList);
+
+
+            if (passengerCorrect == null || !passengerCorrect.Any()) return NotFound();
+
+            return  passengerCorrect;
         }
 
         [HttpPost]
@@ -86,7 +100,7 @@ namespace projOnTheFly.Passenger.Controller
 
             passenger.Phone = passenger.RemovePhoneMask(passengerRequest.Phone);
 
-            await _passengerService.Create(passenger);
+            await _passengerService.CreateAsync(passenger);
 
             PassengerResponse passengerResponse = new()
             {
@@ -117,6 +131,10 @@ namespace projOnTheFly.Passenger.Controller
             if (!"FM".Contains(charToUpper))
                 return BadRequest("Gênero inválido");
 
+            var passengerUpdate = await _passengerService.GetAsync(cpf);
+
+            if (passengerUpdate == null) return NotFound();
+
             Models.Passenger passenger = new()
             {
                 CPF = cpf,
@@ -124,6 +142,7 @@ namespace projOnTheFly.Passenger.Controller
                 Gender = charToUpper,
                 Phone = passengerRequest.Phone,
                 DateBirth = passengerRequest.DateBirth,
+                DtRegister = passengerUpdate.DtRegister,
                 Status = passengerRequest.Status,
                 Address = new Address
                 {
@@ -137,11 +156,7 @@ namespace projOnTheFly.Passenger.Controller
                 }
             };
 
-            var passengerUpdate = _passengerService.Get(passenger.CPF);
-
-            if (passengerUpdate == null) return NotFound();
-
-            await _passengerService.Update(passenger);
+            await _passengerService.UpdateAsync(passenger);
 
             return NoContent();
         }
@@ -153,11 +168,11 @@ namespace projOnTheFly.Passenger.Controller
 
             if (!validateCpf.IsValid()) return BadRequest("CPF inválido");
 
-            var passengerDelete = _passengerService.Get(cpf);
+            var passengerDelete = _passengerService.GetAsync(cpf);
             
             if (passengerDelete== null) return NotFound();
             
-            await _passengerService.Delete(cpf);
+            await _passengerService.DeleteAsync(cpf);
             
             return NoContent();
         }

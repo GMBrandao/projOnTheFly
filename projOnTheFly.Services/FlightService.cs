@@ -1,16 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Http.Json;
+using Newtonsoft.Json;
 using projOnTheFly.Models;
+using projOnTheFly.Passenger.DTO;
 
 namespace projOnTheFly.Services
 {
     public class FlightService
     {
-        static readonly HttpClient address = new HttpClient();
-        public static async Task<Flight?> GetFlightAsync(string iata, string rab, DateTime schedule)
+        static readonly HttpClient flight = new HttpClient();
+        public static async Task<Flight?> CheckFlightAsync(string iata, string rab, DateTime schedule)
         {
             try
             {
-                HttpResponseMessage response = await address.GetAsync($"https://localhost:7068/api/Flights/{iata}/{rab}/{schedule}");
+                FlightCheck flightCheck = new FlightCheck(iata, rab, schedule);
+                HttpResponseMessage response = await flight.PostAsJsonAsync($"https://localhost:7068/api/Flights/check", flightCheck);
                 response.EnsureSuccessStatusCode();
                 string ender = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Flight>(ender);

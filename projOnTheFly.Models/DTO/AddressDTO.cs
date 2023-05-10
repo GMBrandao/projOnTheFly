@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace projOnTheFly.Models
+namespace projOnTheFly.Models.DTO
 {
-    public  class AddressDTO
+    public class AddressDTO
     {
 
         [JsonProperty("cep")]

@@ -1,7 +1,8 @@
 ﻿using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using projOnTheFly.Models;
+using projOnTheFly.Models.DTO;
+using projOnTheFly.Models.Entities;
 using projOnTheFly.Passenger.DTO;
 using projOnTheFly.Passenger.Service;
 using projOnTheFly.Services;
@@ -20,7 +21,7 @@ namespace projOnTheFly.Passenger.Controller
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Models.Passenger>>> GetAll()
+        public async Task<ActionResult<List<Models.Entities.Passenger>>> GetAll()
         {
             var containsPassenger = await  _passengerService.GetAsync();
 
@@ -32,7 +33,7 @@ namespace projOnTheFly.Passenger.Controller
         }
 
         [HttpGet("{cpf}", Name = "Get CPF")]
-        public async Task<ActionResult<Models.Passenger>> GetPassengerByCPF(string cpf)
+        public async Task<ActionResult<Models.Entities.Passenger>> GetPassengerByCPF(string cpf)
         {
             var validateCpf = new ValidateCPFService(cpf);
 
@@ -50,9 +51,9 @@ namespace projOnTheFly.Passenger.Controller
 
         [HttpPost ("check")]
         //criar a verificacao
-        public async Task<ActionResult<List<PassengerCheckResponse>>>PostCheck(PassengerCheck passengerCheck)
+        public async Task<ActionResult<List<PassengerCheckResponseDTO>>>PostCheck(PassengerCheckDTO passengerCheck)
         {
-            List<PassengerCheckResponse> passengerCorrect = await _passengerService.PostCheckAsync(passengerCheck.CpfList);
+            List<PassengerCheckResponseDTO> passengerCorrect = await _passengerService.PostCheckAsync(passengerCheck.CpfList);
 
 
             if (passengerCorrect == null || !passengerCorrect.Any()) return NotFound();
@@ -61,7 +62,7 @@ namespace projOnTheFly.Passenger.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<PassengerResponse>> Post(PassengerPostRequest passengerRequest)
+        public async Task<ActionResult<PassengerResponseDTO>> Post(PassengerPostRequestDTO passengerRequest)
         {
             var validateCpf = new ValidateCPFService(passengerRequest.CPF);
 
@@ -78,7 +79,7 @@ namespace projOnTheFly.Passenger.Controller
             if (!"FM".Contains(charToUpper)) 
                 return BadRequest("Gênero inválido");
 
-            Models.Passenger passenger = new()
+            Models.Entities.Passenger passenger = new()
             {
                 CPF = passengerRequest.CPF,
                 Name = passengerRequest.Name,
@@ -102,7 +103,7 @@ namespace projOnTheFly.Passenger.Controller
 
             await _passengerService.CreateAsync(passenger);
 
-            PassengerResponse passengerResponse = new()
+            PassengerResponseDTO passengerResponse = new()
             {
                 Name = passenger.Name,
                 DtRegister = passenger.DtRegister,
@@ -114,7 +115,7 @@ namespace projOnTheFly.Passenger.Controller
         }
 
         [HttpPut("{cpf}")]
-        public async Task<ActionResult> Update(string cpf, PassengerPutRequest passengerRequest)
+        public async Task<ActionResult> Update(string cpf, PassengerPutRequestDTO passengerRequest)
         {
             var validateCpf = new ValidateCPFService(cpf);
 
@@ -135,7 +136,7 @@ namespace projOnTheFly.Passenger.Controller
 
             if (passengerUpdate == null) return NotFound();
 
-            Models.Passenger passenger = new()
+            Models.Entities.Passenger passenger = new()
             {
                 CPF = cpf,
                 Name = passengerRequest.Name,

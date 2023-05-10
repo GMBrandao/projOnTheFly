@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace projOnTheFly.Models
+namespace projOnTheFly.Models.Entities
 {
     public class Passenger
     {
@@ -13,7 +13,7 @@ namespace projOnTheFly.Models
         public DateTime DtRegister { get; set; }
         public bool Status { get; set; }
         public Address Address { get; set; }
-     
+
         public string RemovePhoneMask(string phone)
         {
             return phone.Replace("(", "").Replace(")", "").Replace("-", "").Trim();
@@ -22,7 +22,7 @@ namespace projOnTheFly.Models
         public bool IsUnderage()
         {
             bool underage = false;
-            
+
             var passagerAge = DtRegister.Year - DateBirth.Year;
 
             if (passagerAge < 18)
@@ -30,6 +30,6 @@ namespace projOnTheFly.Models
             else underage = false;
 
             return underage;
-        }  
+        }
     }
 }

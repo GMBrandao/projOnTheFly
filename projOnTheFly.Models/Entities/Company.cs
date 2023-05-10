@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace projOnTheFly.Models
+namespace projOnTheFly.Models.Entities
 {
     public class Company
     {
@@ -8,7 +8,7 @@ namespace projOnTheFly.Models
         public string Cnpj { get; set; }
         public string Name { get; set; }
         public string NameOpt { get; set; }
-        public DateTime DtOpen { get; set; } 
+        public DateTime DtOpen { get; set; }
         public bool Status { get; set; }
         public Address Address { get; set; }
     }

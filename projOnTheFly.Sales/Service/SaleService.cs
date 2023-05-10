@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-using projOnTheFly.Models;
+using projOnTheFly.Models.Entities;
 using projOnTheFly.Sales.Config;
 
 namespace projOnTheFly.Sales.Service

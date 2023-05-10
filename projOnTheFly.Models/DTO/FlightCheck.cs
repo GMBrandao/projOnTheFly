@@ -1,4 +1,4 @@
-﻿namespace projOnTheFly.Passenger.DTO
+﻿namespace projOnTheFly.Models.DTO
 {
     public class FlightCheck
     {
@@ -10,8 +10,8 @@
             Schedule = schedule;
         }
 
-        public string Iata { get;  set; }
-        public string Rab { get;  set; }
+        public string Iata { get; set; }
+        public string Rab { get; set; }
         public DateTime Schedule { get; set; }
     }
 }

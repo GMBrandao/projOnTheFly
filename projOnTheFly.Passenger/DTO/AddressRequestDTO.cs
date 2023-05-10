@@ -2,7 +2,7 @@
 
 namespace projOnTheFly.Passenger.DTO
 {
-    public class AddressRequest
+    public class AddressRequestDTO
     {
         [Required]
         [Range(1, int.MaxValue)]

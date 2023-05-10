@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Newtonsoft.Json;
-using projOnTheFly.Models;
-using projOnTheFly.Passenger.DTO;
+using projOnTheFly.Models.DTO;
+using projOnTheFly.Models.Entities;
 
 namespace projOnTheFly.Services
 {
@@ -21,6 +21,21 @@ namespace projOnTheFly.Services
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public static async Task<bool> DecrementSaleAsync(string iata, string rab, DateTime schedule, int number)
+        {
+            try
+            {
+                FlightDecrementCheckDTO flightDecrementCheck = new FlightDecrementCheckDTO(iata, rab, schedule, number);
+                HttpResponseMessage response = await flight.PostAsJsonAsync($"https://localhost:7068/api/Flights/decrement", flightDecrementCheck);
+                response.EnsureSuccessStatusCode();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

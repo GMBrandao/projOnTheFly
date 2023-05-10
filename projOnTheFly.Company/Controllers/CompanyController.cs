@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using projOnTheFly.Services;
-using projOnTheFly.Models;
 using projOnTheFly.Company.Services;
 using System.Net;
 using System.Text.RegularExpressions;
 using projOnTheFly.Company.DTO;
 using System.ComponentModel.DataAnnotations;
+using projOnTheFly.Models.Entities;
 
 namespace projOnTheFly.Company.Controllers
 {
@@ -24,14 +24,14 @@ namespace projOnTheFly.Company.Controllers
         }
 
         [HttpGet]
-        public  async Task<List<Models.Company>> Get() => await _companyService.Get();
+        public  async Task<List<Models.Entities.Company>> Get() => await _companyService.Get();
 
 
         [HttpGet("{cnpj}")]
-        public async Task<ActionResult<Models.Company>> Get(string cnpj)
+        public async Task<ActionResult<Models.Entities.Company>> Get(string cnpj)
         {
             
-            Models.Company company = null;
+            Models.Entities.Company company = null;
             string cnpjFixed = Regex.Replace(cnpj, "%2F", "/");
             string formatedCnpj = "";
             if (cnpj.Length == 14)
@@ -80,7 +80,7 @@ namespace projOnTheFly.Company.Controllers
 
             string FomatedCnpj = Regex.Replace(companyRequest.Cnpj, @"(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})", "$1.$2.$3/$4-$5");
 
-            Models.Company company = new()
+            Models.Entities.Company company = new()
             {
                 Cnpj = FomatedCnpj,
                 Name = companyRequest.Name,
@@ -138,7 +138,7 @@ namespace projOnTheFly.Company.Controllers
 
             if (data.ZipCode == null) return BadRequest("CEP inválido");
 
-            Models.Company company = new()
+            Models.Entities.Company company = new()
             {
                 
                 Name = companyPutRequest.Name,

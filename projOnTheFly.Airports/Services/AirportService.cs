@@ -1,6 +1,6 @@
 ﻿using AirportAPI.Utils;
 using MongoDB.Driver;
-using projOnTheFly.Models;
+using projOnTheFly.Models.Entities;
 using System.Collections.Generic;
 
 namespace AirportAPI.Serivces

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using projOnTheFly.Models;
+using projOnTheFly.Models.DTO;
 
 namespace projOnTheFly.Services
 {

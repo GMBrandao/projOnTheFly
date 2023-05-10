@@ -1,12 +1,12 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace projOnTheFly.Models
+namespace projOnTheFly.Models.Entities
 {
     public class Sale
     {
         [BsonId]
         public string Id { get; set; }
-        public List<string>  Passengers { get; set; }
+        public List<string> Passengers { get; set; }
         public Flight Flights { get; set; }
         public bool Reserved { get; set; }
         public bool Sold { get; set; }
@@ -15,9 +15,9 @@ namespace projOnTheFly.Models
         public Sale(List<string> passagenrs, Flight flight)
         {
             //GRU|PT-AAC|080520232149
-            Id = $"{flight.Airport.iata}|{flight.Aircraft.Rab}|{flight.Schedule.Date.ToString("ddMMyyyyHHmm")}"; 
-            Passengers = passagenrs ;
-            Flights = flight ;
+            Id = $"{flight.Airport.iata}|{flight.Aircraft.Rab}|{flight.Schedule.Date.ToString("ddMMyyyyHHmm")}";
+            Passengers = passagenrs;
+            Flights = flight;
         }
 
     }

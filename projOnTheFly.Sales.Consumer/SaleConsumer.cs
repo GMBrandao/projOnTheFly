@@ -27,7 +27,7 @@ namespace projOnTheFly.Sale.Consumers
                     {
                         var body = ea.Body.ToArray();
                         var returnMessage = Encoding.UTF8.GetString(body);
-                        var sale = JsonConvert.DeserializeObject<Models.Sale>(returnMessage);
+                        var sale = JsonConvert.DeserializeObject<Models.Entities.Sale>(returnMessage);
 
                         /* para chamar salvar direto no mongo 
                          * 

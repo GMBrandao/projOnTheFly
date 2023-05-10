@@ -1,4 +1,4 @@
-﻿namespace projOnTheFly.Models
+﻿namespace projOnTheFly.Models.Entities
 {
     public class Address
     {

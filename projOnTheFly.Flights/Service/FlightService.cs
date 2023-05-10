@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using projOnTheFly.Flights.Config;
-using projOnTheFly.Models;
+using projOnTheFly.Models.Entities;
 
 namespace projOnTheFly.Flights.Service
 {
@@ -51,6 +51,19 @@ namespace projOnTheFly.Flights.Service
                _collection.DeleteOne(f => f.Airport.iata == iata && f.Aircraft.Rab == rab && f.Schedule == schedule);
         }
 
-       
+        public async Task DecrementSale(string iata, string rab, DateTime schedule, int number)
+        {
+            var filter = Builders<Flight>.Filter;
+
+            var filterIata = filter.Eq(x => x.Airport.iata, iata);
+            var filterRab = filter.Eq(x => x.Aircraft.Rab, rab);
+            var filterSchedule = filter.Eq(x => x.Schedule, schedule);
+
+            var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
+
+            var filterUpdate = Builders<Flight>.Update.Inc(x => x.Aircraft.Capacity, (number * -1));
+
+            await _collection.UpdateOneAsync(filterAnd, filterUpdate);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using projOnTheFly.Models;
+using projOnTheFly.Passenger.DTO;
 using projOnTheFly.Sales.DTO;
 using projOnTheFly.Sales.Service;
 using projOnTheFly.Services;
@@ -10,7 +11,6 @@ namespace projOnTheFly.Sales.Controllers
     [ApiController]
     public class SalesController : ControllerBase
     {
-
         private readonly SaleService _saleService;
         public SalesController(SaleService service)
         {
@@ -21,46 +21,35 @@ namespace projOnTheFly.Sales.Controllers
         [HttpGet("flight/{iata}/{rab}/{schedule}")]
         public async Task<ActionResult<Sale>> GetByFlight(string iata, string rab, string schedule)
         {
-            return await _saleService.GetByFlight(iata, rab, schedule);
+            return await _saleService.GetByFlightAsync(iata, rab, schedule);
         }
 
         //api/sales/passagenrs/cpf
         [HttpGet("passagenrs/{cpf}")]
         public async Task<ActionResult<Sale>> GetByPassenger(string cpf)
         {
-            return await _saleService.GetSaleByPassenger(cpf);
+            return await _saleService.GetSaleByPassengerAsync(cpf);
         }
 
         //api/sales/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Sale>> GetSales(string id)
         {
-            return await _saleService.GetById(id);
+            return await _saleService.GetByIdAsync(id);
         }
 
         //api/sales/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult<SalePutRequest>> PutSales(string id, SalePutRequest salePutRequest)
         {
-            var saleUpdate = _saleService.GetById(id);
+            Sale saleUpdate = await _saleService.GetByIdAsync(id);
+            if (saleUpdate == null) return NotFound();
 
-            if (saleUpdate== null) return NotFound();
-            /*
-            
-            Flight flightRequest = await FlightService.GetFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
-            if (flightRequest == null) return NotFound();
-            Passenger passengerRequest = await PassengerService.GetPassengerAsync(saleSoldRequest);
-            if(passengerRequest == null) return NotFound();
-           
+            saleUpdate.Sold = salePutRequest.Sold;
+            saleUpdate.Reserved = !salePutRequest.Sold;
 
-            if(salePutRequest.Passengers == null && !salePutRequest.Passengers.Any()) return NotFound();
+            await _saleService.UpdateAsync(saleUpdate);
 
-         
-
-            Sale sale = new(salePutRequest.Passengers, flightRequest, salePutRequest.Sold);
-         
-            await _saleService.Update(sale);
-            */
             return NoContent();
         }
 
@@ -73,15 +62,25 @@ namespace projOnTheFly.Sales.Controllers
             if (saleSoldRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
 
             // testar para ver se atender essa validação
-            if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount) 
+            if (saleSoldRequest.Passengers.Distinct().Count() != passagerCount)
                 return BadRequest("A lista de passageiros contém cpfs duplicados");
 
-            List<Passenger> passengerRequest = await PassengerService.CheckPassengers(saleSoldRequest.Passengers);
+            PassengerCheck passengerCheck = new()
+            {
+                CpfList = saleSoldRequest.Passengers
+            };
 
-            if (passengerRequest == null && !passengerRequest.Any()) return NotFound();
+            List<PassengerCheckResponse> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
 
+            if (passengerRequest == null || !passengerRequest.Any()) return NotFound();
 
-            bool invalidPassagenrs = true;
+            var passengerCheckAge = passengerRequest.First();
+
+            if (passengerCheckAge.Underage == true)
+                return BadRequest("O primeiro passegeiro da lista não possui idade para " +
+                "realizar a compra da passagem");
+
+            bool invalidPassagenrs = false;
 
             foreach (var p in passengerRequest)
             {
@@ -91,19 +90,21 @@ namespace projOnTheFly.Sales.Controllers
                 }
             }
 
-            if (invalidPassagenrs) 
+            if (invalidPassagenrs)
                 return BadRequest("A lista de passageiros contém um inválido");
 
-            Flight? flightRequest = await FlightService.GetFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
-            
+            Flight? flightRequest = await FlightService.CheckFlightAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule);
+
             if (flightRequest == null) return NotFound();
 
-          
             if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
-            Sale saleSold = new(saleSoldRequest.Passengers, flightRequest, saleSoldRequest.Sold );
+            Sale saleSold = new(saleSoldRequest.Passengers, flightRequest);
 
-            await _saleService.Create(saleSold);
+            saleSold.Sold = saleSoldRequest.Sold;
+            saleSold.Reserved = !saleSoldRequest.Sold;
+
+            await _saleService.CreateAsync(saleSold);
 
             SalePostSoldResponse saleResponse = new()
             {
@@ -116,11 +117,65 @@ namespace projOnTheFly.Sales.Controllers
 
         //api/sales
         [HttpPost("reserved")]
-        public async Task<ActionResult<Sale>> PostReserved(Sale sale)
+        public async Task<ActionResult<SalePostReservedRequest>> PostReserved(SalePostReservedRequest saleReservedRequest)
         {
-            await _saleService.Create(sale);
+            var passagerCount = saleReservedRequest.Passengers.Count;
 
-            return CreatedAtAction("GetByFlight", new { Id = sale.Id }, sale);
+            if (saleReservedRequest == null) return UnprocessableEntity("Requisição de vendas inválida");
+
+            // testar para ver se atender essa validação
+            if (saleReservedRequest.Passengers.Distinct().Count() != passagerCount)
+                return BadRequest("A lista de passageiros contém cpfs duplicados");
+
+            PassengerCheck passengerCheck = new()
+            {
+                CpfList = saleReservedRequest.Passengers
+            };
+
+            List<PassengerCheckResponse> passengerRequest = await PassengerService.CheckPassengersAsync(passengerCheck);
+
+            if (passengerRequest == null || !passengerRequest.Any()) return NotFound();
+
+            var passengerCheckAge = passengerRequest.First();
+
+            if (passengerCheckAge.Underage == true)
+                return BadRequest("O primeiro passegeiro da lista não possui idade para " +
+                "realizar a compra da passagem");
+
+            bool invalidPassagenrs = false;
+
+            foreach (var p in passengerRequest)
+            {
+                if (p.Status == false && saleReservedRequest.Passengers.Contains(p.CPF))
+                {
+                    invalidPassagenrs = true;
+                }
+            }
+
+            if (invalidPassagenrs)
+                return BadRequest("A lista de passageiros contém um inválido");
+
+            Flight? flightRequest = await FlightService.CheckFlightAsync(saleReservedRequest.Iata, saleReservedRequest.Rab, saleReservedRequest.Schedule);
+
+            if (flightRequest == null) return NotFound();
+
+
+            if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
+
+            Sale saleSold = new(saleReservedRequest.Passengers, flightRequest);
+
+            saleSold.Reserved = saleReservedRequest.Reserved;
+            saleSold.Sold = !saleReservedRequest.Reserved;
+
+            await _saleService.CreateAsync(saleSold);
+
+            SalePostSoldResponse saleResponse = new()
+            {
+                Id = saleSold.Id,
+                Sold = saleSold.Sold,
+            };
+
+            return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);
         }
 
     }

@@ -12,14 +12,12 @@ namespace projOnTheFly.Models
         public bool Sold { get; set; }
 
 
-        public Sale(List<string> passagenrs, Flight flight, bool sold)
+        public Sale(List<string> passagenrs, Flight flight)
         {
             //GRU|PT-AAC|080520232149
             Id = $"{flight.Airport.iata}|{flight.Aircraft.Rab}|{flight.Schedule.Date.ToString("ddMMyyyyHHmm")}"; 
             Passengers = passagenrs ;
             Flights = flight ;
-            Sold = sold ;
-            Reserved = !sold;
         }
 
     }

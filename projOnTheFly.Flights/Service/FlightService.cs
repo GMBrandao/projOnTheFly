@@ -32,7 +32,7 @@ namespace projOnTheFly.Flights.Service
 
         }
 
-        public async Task<Flight> GetByFilters(string iata, string rab, DateTime schedule)
+        public async Task<Flight> CheckFlight(string iata, string rab, DateTime schedule)
         {
             var filter = Builders<Flight>.Filter;
 

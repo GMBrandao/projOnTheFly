@@ -45,7 +45,7 @@ namespace projOnTheFly.Flights.Controllers
             AirportDTO airport = await GetAirport.GetAirportAsync(flightDTO.Iata);
             if (airport == null) return NotFound("Aeroporto não existe no banco de dados");
             Aircraft aircraft = await GetAircraft.GetAircraftAsync(flightDTO.Rab);
-            if (aircraft == null) return NotFound("não existe no banco de dados");
+            if (aircraft == null) return NotFound("CÓDIGO RAB não existe no banco de dados");
             if (aircraft.Company.Status == false) return BadRequest("Companhia com restrição");
 
             Flight f = new()

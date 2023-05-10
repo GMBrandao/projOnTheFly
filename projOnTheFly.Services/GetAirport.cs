@@ -17,7 +17,7 @@ namespace projOnTheFly.Services
             try
             {   
                 
-                HttpResponseMessage response = await airportClient.GetAsync("https://localhost:44366/Airport/" + iata);
+                HttpResponseMessage response = await airportClient.GetAsync("https://localhost:44366/Airport/" + iata.ToUpper());
                 response.EnsureSuccessStatusCode();
                 string ender = await response.Content.ReadAsStringAsync();
                 AirportDTO? airport = JsonConvert.DeserializeObject<AirportDTO?>(ender);

@@ -14,11 +14,9 @@ namespace projOnTheFly.Sales.DTO
         public string Rab { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
         public DateTime Schedule { get; set; }
 
         [Required]
-        [StringLength(14)]
         public List<string> Passengers { get; set; }
 
         [Required]

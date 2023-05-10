@@ -9,7 +9,6 @@ namespace projOnTheFly.Sale.Consumers
 {
     public class SaleConsumer
     {
-        private const string QUEUE_NAME = "Sale";
 
         public void Start(IConnection connection)
         {

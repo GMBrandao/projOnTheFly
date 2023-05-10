@@ -142,7 +142,7 @@ namespace projOnTheFly.Sales.Controllers
                 Sold = sale.Sold,
             };
 
-            return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);
+            return Ok();
         }
 
         //api/sales
@@ -233,7 +233,7 @@ namespace projOnTheFly.Sales.Controllers
                 Sold = sale.Sold,
             };
 
-            return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);
+            return Ok();
         }
 
         //api/sales/{id}

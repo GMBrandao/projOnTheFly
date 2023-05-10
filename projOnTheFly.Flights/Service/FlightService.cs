@@ -16,25 +16,20 @@ namespace projOnTheFly.Flights.Service
             _collection = database.GetCollection<Flight>(settings.FlightCollectionName);
         }
         public async Task<List<Flight>> Get() => await _collection.Find(c => c.Status == true).ToListAsync();
+
         public async Task<Flight> Create(Flight flight)
         {
             await _collection.InsertOneAsync(flight);
             return flight;
-        }
+        }       
 
-        public async Task<Flight> Update(Flight flight)
-        {
-            var filter = Builders<Flight>.Filter;
+        public  void  Update(string iata, string rab, DateTime schedule)
+        {            
 
-            var filterIata = filter.Eq(x => x.Airport.iata, flight.Airport.iata);
-            var filterRab = filter.Eq(x => x.Aircraft.Rab, flight.Aircraft.Rab);
-            var filterSchedule =  filter.Eq(x => x.Schedule, flight.Schedule);
+            var filter = Builders<Flight>.Filter.Where(f => f.Airport.iata == iata && f.Aircraft.Rab == rab && f.Schedule == schedule);
+            var filt = Builders<Flight>.Update.Set(f => f.Status, false);
+            _collection.UpdateOne(filter, filt);
 
-            var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
-
-            await _collection.ReplaceOneAsync(filterAnd, flight);
-
-            return flight;
         }
 
         public async Task<Flight> CheckFlight(string iata, string rab, DateTime schedule)
@@ -48,11 +43,13 @@ namespace projOnTheFly.Flights.Service
             var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
 
             return await _collection.Find(filterAnd).FirstOrDefaultAsync();
-        }      
-             
-        public ActionResult<Flight> Delete(string iata, string rab, DateTime schedule)
+        }
+
+
+        public  void Delete(string iata, string rab, DateTime schedule)
         {
-            var filter = Builders<Flight>.Filter;
+               _collection.DeleteOne(f => f.Airport.iata == iata && f.Aircraft.Rab == rab && f.Schedule == schedule);
+        }
 
             var filterIata = filter.Eq(x => x.Airport.iata, iata);
             var filterRab = filter.Eq(x => x.Aircraft.Rab, rab);

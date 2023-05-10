@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using projOnTheFly.Flights.DTO;
 using projOnTheFly.Flights.Service;
 using projOnTheFly.Models;
 using projOnTheFly.Passenger.DTO;
@@ -38,12 +39,13 @@ namespace projOnTheFly.Flights.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<FlightDTO>> Create(FlightDTO flightDTO)
+        public async Task<ActionResult<Models.FlightDTO>> Create(Models.FlightDTO flightDTO)
         {
             
             AirportDTO airport = await GetAirport.GetAirportAsync(flightDTO.Iata);
             if (flightDTO.Status == false) return BadRequest("status de vôo cancelado");            
             Aircraft aircraft = await GetAircraft.GetAircraftAsync(flightDTO.Rab);
+            if (aircraft.Company.Status == false) return BadRequest("Companhia com restrição");
 
             Flight f = new()
             {
@@ -60,18 +62,22 @@ namespace projOnTheFly.Flights.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<Flight>> Update(Flight flight)
+        public async Task<ActionResult> Update(string iata, string rab, DateTime schedule)
         {
-            _flightService.Update( flight);
 
-            return StatusCode(200);
+            _flightService.Update(iata, rab, schedule);            
+
+            return StatusCode(204);
         }
+
+
 
         [HttpDelete]
         public async Task<ActionResult> Delete(string iata, string rab, DateTime schedule)
         {
-
-            _flightService.Delete(iata, rab, schedule);
+            
+            _flightService.Delete(iata, rab, schedule);          
+           
             return StatusCode(200);
 
         }

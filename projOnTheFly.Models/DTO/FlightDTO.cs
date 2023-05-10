@@ -11,7 +11,7 @@ namespace projOnTheFly.Models.DTO
         public string Iata { get; set; }
 
         public string Rab { get; set; }
-        public int Sales { get; set; }
+       
         public bool Status { get; set; }
         public DateTime Schedule { get; set; }
     }

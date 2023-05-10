@@ -49,7 +49,7 @@ namespace projOnTheFly.Flights.Controllers
 
             Flight f = new()
             {
-                Sale = flightDTO.Sales,
+                
                 Status = flightDTO.Status,
                 Airport = airport,
                 Aircraft = aircraft,

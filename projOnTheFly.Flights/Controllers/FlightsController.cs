@@ -31,6 +31,13 @@ namespace projOnTheFly.Flights.Controllers
         public async Task<Flight> CheckFlight(FlightCheck flightCheck) 
             => await _flightService.CheckFlight(flightCheck.Iata, flightCheck.Rab, flightCheck.Schedule);
 
+        [HttpPost("decrement")]
+        public async Task<ActionResult> DecrementSaleFlight(FlightDecrementCheck flightCheck)
+        {
+            await _flightService.DecrementSale(flightCheck.Iata, flightCheck.Rab, flightCheck.Schedule, flightCheck.Number);
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<ActionResult<FlightDTO>> Create(FlightDTO flightDTO)
         {

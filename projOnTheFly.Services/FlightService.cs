@@ -23,5 +23,20 @@ namespace projOnTheFly.Services
                 return null;
             }
         }
+
+        public static async Task<bool> DecrementSaleAsync(string iata, string rab, DateTime schedule, int number)
+        {
+            try
+            {
+                FlightDecrementCheck flightDecrementCheck = new FlightDecrementCheck(iata, rab, schedule, number);
+                HttpResponseMessage response = await flight.PostAsJsonAsync($"https://localhost:7068/api/Flights/decrement", flightDecrementCheck);
+                response.EnsureSuccessStatusCode();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

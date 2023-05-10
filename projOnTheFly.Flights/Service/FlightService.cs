@@ -21,6 +21,7 @@ namespace projOnTheFly.Flights.Service
             await _collection.InsertOneAsync(flight);
             return flight;
         }
+
         public async Task<Flight> Update(Flight flight)
         {
             var filter = Builders<Flight>.Filter;
@@ -60,6 +61,21 @@ namespace projOnTheFly.Flights.Service
             var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
 
             return  _collection.FindOneAndDelete(filterAnd);
+        }
+
+        public async Task DecrementSale(string iata, string rab, DateTime schedule, int number)
+        {
+            var filter = Builders<Flight>.Filter;
+
+            var filterIata = filter.Eq(x => x.Airport.iata, iata);
+            var filterRab = filter.Eq(x => x.Aircraft.Rab, rab);
+            var filterSchedule = filter.Eq(x => x.Schedule, schedule);
+
+            var filterAnd = filter.And(filterIata, filterRab, filterSchedule);
+
+            var filterUpdate = Builders<Flight>.Update.Inc(x => x.Sale, (number * -1));
+
+            await _collection.UpdateOneAsync(filterAnd, filterUpdate);
         }
     }
 }

@@ -99,17 +99,19 @@ namespace projOnTheFly.Sales.Controllers
 
             if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
-            Sale saleSold = new(saleSoldRequest.Passengers, flightRequest);
+            Sale sale = new(saleSoldRequest.Passengers, flightRequest);
 
-            saleSold.Sold = saleSoldRequest.Sold;
-            saleSold.Reserved = !saleSoldRequest.Sold;
+            sale.Sold = saleSoldRequest.Sold;
+            sale.Reserved = !saleSoldRequest.Sold;
 
-            await _saleService.CreateAsync(saleSold);
+            //Mover essas duas linhas para o consumer do rabbitmq
+            await _saleService.CreateAsync(sale);
+            await FlightService.DecrementSaleAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule, passagerCount);
 
             SalePostSoldResponse saleResponse = new()
             {
-                Id = saleSold.Id,
-                Sold = saleSold.Sold,
+                Id = sale.Id,
+                Sold = sale.Sold,
             };
 
             return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);
@@ -162,17 +164,20 @@ namespace projOnTheFly.Sales.Controllers
 
             if (flightRequest.Sale < passagerCount) return BadRequest("Não contém assentos disponiveis para essa venda");
 
-            Sale saleSold = new(saleReservedRequest.Passengers, flightRequest);
+            Sale sale = new(saleReservedRequest.Passengers, flightRequest);
 
-            saleSold.Reserved = saleReservedRequest.Reserved;
-            saleSold.Sold = !saleReservedRequest.Reserved;
+            sale.Reserved = saleReservedRequest.Reserved;
+            sale.Sold = !saleReservedRequest.Reserved;
 
-            await _saleService.CreateAsync(saleSold);
+            //Mover essas duas linhas para o consumer do rabbitmq
+            await _saleService.CreateAsync(sale);
+            await FlightService.DecrementSaleAsync(saleReservedRequest.Iata, saleReservedRequest.Rab, saleReservedRequest.Schedule, passagerCount);
+
 
             SalePostSoldResponse saleResponse = new()
             {
-                Id = saleSold.Id,
-                Sold = saleSold.Sold,
+                Id = sale.Id,
+                Sold = sale.Sold,
             };
 
             return CreatedAtAction("GetByFlight", new { Id = saleResponse.Id }, saleResponse);

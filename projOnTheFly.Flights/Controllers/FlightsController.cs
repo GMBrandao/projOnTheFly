@@ -66,22 +66,10 @@ namespace projOnTheFly.Flights.Controllers
 
 
 
-
-
-
-
-        /*public async Task<ActionResult<Flight>> Update(Flight flight)
-        {
-            _flightService.Update( flight);
-
-            return StatusCode(200);
-        }*/
-
         [HttpDelete]
         public async Task<ActionResult> Delete(string iata, string rab, DateTime schedule)
         {
-            var found = await _flightService.GetByFilters(iata, rab, schedule);
-            if (found == null) return NotFound();
+            
             _flightService.Delete(iata, rab, schedule);          
            
             return StatusCode(200);

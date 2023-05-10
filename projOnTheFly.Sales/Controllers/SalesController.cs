@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using projOnTheFly.Models.DTO;
 using projOnTheFly.Models.Entities;
 using projOnTheFly.Sales.DTO;
 using projOnTheFly.Sales.Service;
 using projOnTheFly.Services;
+using RabbitMQ.Client;
+using System.Text;
 
 namespace projOnTheFly.Sales.Controllers
 {
@@ -12,9 +15,12 @@ namespace projOnTheFly.Sales.Controllers
     public class SalesController : ControllerBase
     {
         private readonly SaleService _saleService;
-        public SalesController(SaleService service)
+        private readonly ConnectionFactory _factory;
+
+        public SalesController(SaleService service, ConnectionFactory factory)
         {
             _saleService = service;
+            _factory = factory;
         }
 
         //api/sales/flight/cpf
@@ -103,8 +109,30 @@ namespace projOnTheFly.Sales.Controllers
             sale.Sold = saleSoldRequest.Sold;
             sale.Reserved = !saleSoldRequest.Sold;
 
-            //Mover essas duas linhas para o consumer do rabbitmq
-            await _saleService.CreateAsync(sale);
+            using (var connection = _factory.CreateConnection())
+            {
+                using (var channel = connection.CreateModel())
+                {
+
+                    channel.QueueDeclare(
+                        queue: "Sales",
+                        durable: false,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                        );
+
+                    var stringfieldMessage = JsonConvert.SerializeObject(sale);
+                    var bytesMessage = Encoding.UTF8.GetBytes(stringfieldMessage);
+
+                    channel.BasicPublish(
+                        exchange: "",
+                        routingKey: "Sales",
+                        basicProperties: null,
+                        body: bytesMessage
+                        );
+                }
+            }
 
             await FlightService.DecrementSaleAsync(saleSoldRequest.Iata, saleSoldRequest.Rab, saleSoldRequest.Schedule, passagerCount);
 
@@ -172,8 +200,31 @@ namespace projOnTheFly.Sales.Controllers
             sale.Reserved = saleReservedRequest.Reserved;
             sale.Sold = !saleReservedRequest.Reserved;
 
-            //Mover essas duas linhas para o consumer do rabbitmq
-            await _saleService.CreateAsync(sale);
+            using (var connection = _factory.CreateConnection())
+            {
+                using (var channel = connection.CreateModel())
+                {
+
+                    channel.QueueDeclare(
+                        queue: "Reserve",
+                        durable: false,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                        );
+
+                    var stringfieldMessage = JsonConvert.SerializeObject(sale);
+                    var bytesMessage = Encoding.UTF8.GetBytes(stringfieldMessage);
+
+                    channel.BasicPublish(
+                        exchange: "",
+                        routingKey: "Reserve",
+                        basicProperties: null,
+                        body: bytesMessage
+                        );
+                }
+            }
+
             await FlightService.DecrementSaleAsync(saleReservedRequest.Iata, saleReservedRequest.Rab, saleReservedRequest.Schedule, passagerCount);
 
             SalePostSoldResponseDTO saleResponse = new()

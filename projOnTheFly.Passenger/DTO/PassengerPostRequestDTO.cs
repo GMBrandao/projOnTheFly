@@ -11,7 +11,6 @@ namespace projOnTheFly.Passenger.DTO
         public string CPF { get; set; }
 
         [Required]
-        [MaxLength(10)]
         [MinLength(3)]
         public string Name { get; set; }
 

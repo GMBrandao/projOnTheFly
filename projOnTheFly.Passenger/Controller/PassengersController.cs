@@ -29,8 +29,8 @@ namespace projOnTheFly.Passenger.Controller
                 return BadRequest("Não existem passageiros com status ativos ou não existem passageiros cadastrados");
             }
             return containsPassenger;
-            
         }
+
         [HttpGet("{cpf}", Name = "Get CPF")]
         public async Task<ActionResult<Models.Passenger>> GetPassengerByCPF(string cpf)
         {
@@ -46,7 +46,6 @@ namespace projOnTheFly.Passenger.Controller
             }
             return containsPassenger;
         }
-
 
 
         [HttpPost ("ckeck")]
@@ -132,6 +131,10 @@ namespace projOnTheFly.Passenger.Controller
             if (!"FM".Contains(charToUpper))
                 return BadRequest("Gênero inválido");
 
+            var passengerUpdate = await _passengerService.Get(cpf);
+
+            if (passengerUpdate == null) return NotFound();
+
             Models.Passenger passenger = new()
             {
                 CPF = cpf,
@@ -139,6 +142,7 @@ namespace projOnTheFly.Passenger.Controller
                 Gender = charToUpper,
                 Phone = passengerRequest.Phone,
                 DateBirth = passengerRequest.DateBirth,
+                DtRegister = passengerUpdate.DtRegister,
                 Status = passengerRequest.Status,
                 Address = new Address
                 {
@@ -151,10 +155,6 @@ namespace projOnTheFly.Passenger.Controller
                     Street = postOffice.Street
                 }
             };
-
-            var passengerUpdate = _passengerService.Get(passenger.CPF);
-
-            if (passengerUpdate == null) return NotFound();
 
             await _passengerService.Update(passenger);
 

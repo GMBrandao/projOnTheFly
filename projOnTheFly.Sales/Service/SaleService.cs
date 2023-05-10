@@ -31,7 +31,7 @@ namespace projOnTheFly.Sales.Service
             return sale;
         }
        
-        public Task Delete(string cpf) => _collection.DeleteOneAsync(c => c.Passengers.Contains(cpf));
+        public async Task DeleteOneAsync(string id) => await _collection.DeleteOneAsync(c => c.Id == id);
 
         public async Task<Sale> GetByFlightAsync(string iata, string rab, string schedule)
         {

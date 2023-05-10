@@ -10,9 +10,9 @@ namespace projOnTheFly.Models
     public class Flight
     {
 
-        [BsonId] 
-        public int Id { get; set; } 
-
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } 
 
         public AirportDTO Airport { get; set; }
         public Aircraft Aircraft { get; set; }

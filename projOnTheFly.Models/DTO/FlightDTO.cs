@@ -16,9 +16,6 @@ namespace projOnTheFly.Models.DTO
         [Required]
         [MaxLength(6)]
         public string Rab { get; set; }
-        
-        [Required]
-        public int Sales { get; set; }
 
         [Required]
         public bool Status { get; set; }

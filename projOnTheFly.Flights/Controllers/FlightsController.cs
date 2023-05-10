@@ -17,7 +17,6 @@ namespace projOnTheFly.Flights.Controllers
 
         private readonly FlightService _flightService;
 
-
         public FlightsController(FlightService flightService)
         {
             _flightService = flightService;
